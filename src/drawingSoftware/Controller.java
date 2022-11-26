@@ -1,6 +1,9 @@
 package drawingSoftware;
 
 import javafx.scene.paint.Color;
+import javafx.stage.FileChooser;
+
+import java.io.File;
 import java.net.URL;
 import java.util.ResourceBundle;
 import javafx.event.ActionEvent;
@@ -22,6 +25,7 @@ import javafx.scene.layout.Pane;
 import javafx.scene.canvas.GraphicsContext;
 
 public class Controller implements Initializable{
+
 
     @FXML
     private AnchorPane ancorPane;
@@ -63,11 +67,18 @@ public class Controller implements Initializable{
     private Button segmentButton;
 
 
+
     private double startDragX;
     private double startDragY;
     private GraphicsContext gc;
 
     private SelectedFigure selectedFigure; 
+
+    /*FILE CHOOSER */
+    FileChooser filechooser = new FileChooser();
+    Receiver receiver = new Receiver();
+    FileInvoker fileInvoker = new FileInvoker();    
+
 
     /*
      * stroke = contorno
@@ -77,6 +88,13 @@ public class Controller implements Initializable{
      */
     @Override
     public void initialize(URL location, ResourceBundle resources) {
+
+        /* INIZIALIZZAZIONE VARIABILI PER CARICAMENTO FILE */
+        // fc.setInitialDirectory(new File("/home/gianluigi/VSC Workspace/JavaProjects/ProgettoSE/Progetto/src/project"));
+        filechooser.setInitialDirectory(new File("."));  // apro cartella corrente
+        filechooser.getExtensionFilters().add(new FileChooser.ExtensionFilter("images", "*.png")); // filechooser mi mostra solo png
+  
+
         selectedFigure = new SelectedFigure(new SegmentState());
         
         gc = drawingWindow.getGraphicsContext2D();
@@ -136,7 +154,9 @@ public class Controller implements Initializable{
 
     @FXML
     void onLoad(ActionEvent event) {
-
+        Command command = new LoadCommand(receiver, filechooser, gc);
+        fileInvoker.setCommand(command);
+        fileInvoker.executeCommand();
     }
 
     @FXML
