@@ -13,11 +13,12 @@
 <?import javafx.scene.layout.AnchorPane?>
 <?import javafx.scene.layout.BorderPane?>
 <?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.Pane?>
 <?import javafx.scene.layout.VBox?>
 
 <AnchorPane fx:id="ancorPane" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="618.0" prefWidth="697.0" xmlns="http://javafx.com/javafx/19" xmlns:fx="http://javafx.com/fxml/1" fx:controller="hellofx.Controller">
    <children>
-      <BorderPane fx:id="borderPane" prefHeight="618.0" prefWidth="697.0">
+      <BorderPane fx:id="borderPane" prefHeight="618.0" prefWidth="697.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
          <top>
             <VBox prefHeight="99.0" prefWidth="698.0" BorderPane.alignment="CENTER">
                <children>
@@ -50,29 +51,29 @@
                               <Label prefHeight="23.0" prefWidth="202.0" text="Choose a shape" />
                               <HBox prefHeight="36.0" prefWidth="204.0">
                                  <children>
-                                    <Button fx:id="segmentButton" mnemonicParsing="false" prefHeight="40.0" prefWidth="35.0">
+                                    <Button fx:id="segmentButton" mnemonicParsing="false" onAction="#onLineClick" prefHeight="40.0" prefWidth="35.0">
                                        <graphic>
                                           <ImageView fitHeight="26.0" fitWidth="28.0" pickOnBounds="true" preserveRatio="true">
                                              <image>
-                                                <Image url="@segmentttt.png" />
+                                                <Image url="@images/segment.png" />
                                              </image>
                                           </ImageView>
                                        </graphic>
                                     </Button>
-                                    <Button fx:id="ellipseButton" mnemonicParsing="false" prefHeight="40.0" prefWidth="35.0">
+                                    <Button fx:id="ellipseButton" mnemonicParsing="false" onAction="#onEllipseClick" prefHeight="40.0" prefWidth="35.0">
                                        <graphic>
                                           <ImageView fitHeight="45.0" fitWidth="29.0" pickOnBounds="true" preserveRatio="true">
                                              <image>
-                                                <Image url="@ellipse4-removebg-preview.png" />
+                                                <Image url="@images/ellipse.png" />
                                              </image>
                                           </ImageView>
                                        </graphic>
                                     </Button>
-                                    <Button fx:id="rectangleButton" mnemonicParsing="false" prefHeight="40.0" prefWidth="35.0">
+                                    <Button fx:id="rectangleButton" mnemonicParsing="false" onAction="#onRectangleClick" prefHeight="40.0" prefWidth="35.0">
                                        <graphic>
                                           <ImageView fitHeight="30.0" fitWidth="27.0" pickOnBounds="true" preserveRatio="true">
                                              <image>
-                                                <Image url="@blackborderrectangle-removebg-preview.png" />
+                                                <Image url="@images/rectangle.png" />
                                              </image>
                                           </ImageView>
                                        </graphic>
@@ -86,7 +87,11 @@
             </VBox>
          </top>
          <center>
-            <Canvas fx:id="drawingWindow" height="509.0" width="697.0" BorderPane.alignment="CENTER" />
+            <Pane fx:id="paneDrawableWindow" prefHeight="513.0" prefWidth="693.0" style="-fx-background-color: white;">
+               <children>
+                  <Canvas fx:id="drawingWindow" height="518.0" layoutY="-1.0" width="697.0" />
+               </children>
+            </Pane>
          </center>
       </BorderPane>
    </children>

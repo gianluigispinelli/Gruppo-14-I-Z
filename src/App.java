@@ -15,7 +15,7 @@ public class App extends Application {
     public void start(Stage primaryStage) throws Exception{
         try {
             Parent root=FXMLLoader.load(getClass().getResource("mainInterface.fxml"));
-            primaryStage.setTitle("Gruppo 14");
+            primaryStage.setTitle("Draw Shape");
             primaryStage.setScene(new Scene(root));
             primaryStage.show();
         } catch (Exception e) {
