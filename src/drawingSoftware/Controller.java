@@ -1,13 +1,8 @@
-package hellofx;
+package drawingSoftware;
 
 import javafx.scene.paint.Color;
-import javafx.stage.FileChooser;
-import javafx.stage.Stage;
-
 import java.net.URL;
 import java.util.ResourceBundle;
-
-import javafx.beans.binding.Bindings;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.fxml.FXML;
@@ -19,8 +14,6 @@ import javafx.scene.control.ColorPicker;
 import javafx.scene.control.Label;
 import javafx.scene.control.Menu;
 import javafx.scene.control.MenuItem;
-import javafx.scene.control.ScrollPane;
-import javafx.scene.image.WritableImage;
 import javafx.scene.input.MouseButton;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.AnchorPane;
@@ -77,7 +70,8 @@ public class Controller implements Initializable{
     private SelectedFigure selectedFigure; 
 
     /*
-     * 
+     * stroke = contorno
+     * fill = contenuto 
      * task: Function for selecting a geometrical shape in the ribbon amongst the following list: [rectangle, line segment, ellipse]
      * task: Function for adding the selected shape with fixed size from the ribbon in the drawable window
      */
@@ -86,7 +80,6 @@ public class Controller implements Initializable{
         selectedFigure = new SelectedFigure(new SegmentState());
         
         gc = drawingWindow.getGraphicsContext2D();
-        
         
         borderColorPicker.setValue(Color.BLACK);
         interiorColorPicker.setValue(Color.WHITE);
@@ -101,7 +94,7 @@ public class Controller implements Initializable{
             startDragY = e.getY();
             }
         });
-        //event filter because mouse move quickly in the drawable window
+        //event filter because mouse move quickly ad 
         drawingWindow.addEventFilter(MouseEvent.MOUSE_RELEASED, new EventHandler<MouseEvent>() {
             @Override
             public void handle(MouseEvent e) {

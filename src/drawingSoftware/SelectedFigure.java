@@ -1,5 +1,4 @@
-package hellofx;
-
+package drawingSoftware;
 import javafx.beans.value.ObservableBooleanValue;
 import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.control.ColorPicker;
@@ -23,5 +22,4 @@ public class SelectedFigure{   // E' il Context
     public State getState(){
         return s;
     }
-
 }
