@@ -1,7 +1,3 @@
-
-
-
-
 package hellofx;
 
 import java.net.URL;
