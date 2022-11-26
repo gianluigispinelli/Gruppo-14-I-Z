@@ -9,6 +9,8 @@ import javafx.scene.Parent;
 
 public class App extends Application {
 
+    // commento
+
     @Override
     public void start(Stage primaryStage) throws Exception{
         try {
