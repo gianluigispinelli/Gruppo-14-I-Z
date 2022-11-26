@@ -71,7 +71,25 @@ public class Controller implements Initializable{
 
     @FXML
     void onSave(ActionEvent event) {
-
+        Stage stage =  new Stage();
+        
+        FileChooser fileChooser = new FileChooser();
+        fileChooser.setTitle("Save File");
+        FileChooser.ExtensionFilter extFilter = new FileChooser.ExtensionFilter("PNG files", "*.PNG");
+        fileChooser.getExtensionFilters().add(extFilter);
+        
+        File file = fileChooser.showSaveDialog(stage);
+        if (file != null){
+            try {
+                WritableImage writableImage = new WritableImage((int)this.screen.prefWidth(0),(int) this.screen.prefHeight(0));
+                this.screen.snapshot(null, writableImage);
+                RenderedImage renderedImage = SwingFXUtils.fromFXImage(writableImage, null);
+                ImageIO.write(renderedImage,"png", file);
+            } catch (IOException ex) {
+                ex.printStackTrace();
+                System.out.println("Error!");
+            }
+        }
     }
 
 
@@ -81,15 +99,9 @@ public class Controller implements Initializable{
 
     @Override
     public void initialize(URL location, ResourceBundle resources) {
-        GraphicsContext gc=drawingWindow.getGraphicsContext2D();
+        
 
-        drawingWindow.setOnMouseDragged(e->{
-            double x=e.getX()- 5; //5=size(la size sta nel fill React)/2
-            double y=e.getY()-5;  //stessa cosa di sopra
-
-            gc.setFill(interiorColorPicker.getValue());
-            gc.fillRect(x,y,10,10);
-        });
+        
         
     }
 
