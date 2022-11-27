@@ -1,6 +1,8 @@
 package drawingSoftware;
 
 
+import javafx.beans.property.SimpleBooleanProperty;
+import javafx.beans.value.ObservableBooleanValue;
 import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.control.ColorPicker;
 
@@ -15,5 +17,11 @@ public class EllipseState implements State{
         graphicsContext.fillOval(Math.min(startDragX, finalDragX),Math.min(startDragY, finalDragY),Math.abs(finalDragX-startDragX),Math.abs(finalDragY-startDragY));    
     }
     
+    @Override
+    public ObservableBooleanValue isNotSegmentState() {
+        // TODO Auto-generated method stub
+        ObservableBooleanValue visible = new SimpleBooleanProperty(true);
+        return visible;
+    }
     
 }
