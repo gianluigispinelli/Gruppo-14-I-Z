@@ -161,6 +161,9 @@ public class Controller implements Initializable{
 
     @FXML
     void onSave(ActionEvent event) {
+        SaveCommand saveCommand = new SaveCommand(this.receiver,drawingWindow);
+        this.fileInvoker.setCommand(saveCommand);
+        this.fileInvoker.executeCommand();
     } 
 
 }
