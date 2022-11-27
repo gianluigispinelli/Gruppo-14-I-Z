@@ -123,23 +123,27 @@ public class Controller implements Initializable{
             }
         }
         });
+        setInteriorColorPickerVisible();
     }
  
     @FXML
     void onEllipseClick(ActionEvent event) {
         
         selectedFigure.changeState(new EllipseState());
+        setInteriorColorPickerVisible();
     }
 
     @FXML
     void onLineClick(ActionEvent event) {
         selectedFigure.changeState(new SegmentState());
+        setInteriorColorPickerVisible();
     }
 
     @FXML
     void onRectangleClick(ActionEvent event) {
         
         selectedFigure.changeState(new RectangleState());
+        setInteriorColorPickerVisible();
     }
 
     @FXML
@@ -165,7 +169,10 @@ public class Controller implements Initializable{
         this.fileInvoker.setCommand(saveCommand);
         this.fileInvoker.executeCommand();
     } 
-
+    private void setInteriorColorPickerVisible(){
+        interiorColorPicker.visibleProperty().bind(selectedFigure.getSegmentState());
+        chooseInteriorColorLabel.visibleProperty().bind(selectedFigure.getSegmentState());
+    }
 }
 
 
