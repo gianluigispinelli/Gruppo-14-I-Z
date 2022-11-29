@@ -11,7 +11,6 @@ import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.Cursor;
-import javafx.scene.canvas.Canvas;
 import javafx.scene.control.Button;
 import javafx.scene.control.ColorPicker;
 import javafx.scene.control.Label;
@@ -43,7 +42,7 @@ public class Controller implements Initializable{
     private Pane paneDrawableWindow;
     
     @FXML
-    private Canvas drawingWindow;
+    private Pane drawingWindow;
 
     @FXML
     private Button ellipseButton;
@@ -97,8 +96,6 @@ public class Controller implements Initializable{
 
         selectedFigure = new SelectedFigure(new SegmentState());
         
-        gc = drawingWindow.getGraphicsContext2D();
-        
         borderColorPicker.setValue(Color.BLACK);
         interiorColorPicker.setValue(Color.WHITE);
         
@@ -119,7 +116,7 @@ public class Controller implements Initializable{
                 if(e.getButton() == MouseButton.PRIMARY){
                 double finalDragX = e.getX();
                 double finalDragY = e.getY();
-                selectedFigure.drawShape(borderColorPicker, interiorColorPicker, gc, startDragX, startDragY, finalDragX, finalDragY);
+                selectedFigure.drawShape(drawingWindow,borderColorPicker, interiorColorPicker,startDragX, startDragY, finalDragX, finalDragY);
             }
         }
         });
@@ -158,7 +155,7 @@ public class Controller implements Initializable{
 
     @FXML
     void onLoad(ActionEvent event) {
-        Command command = new LoadCommand(receiver, filechooser, gc);
+        Command command = new LoadCommand(receiver, filechooser, drawingWindow);
         fileInvoker.setCommand(command);
         fileInvoker.executeCommand();
     }

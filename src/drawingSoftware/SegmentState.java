@@ -1,16 +1,32 @@
 package drawingSoftware;
+
 import javafx.beans.property.SimpleBooleanProperty;
 import javafx.beans.value.ObservableBooleanValue;
-import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.control.ColorPicker;
+import javafx.scene.layout.Pane;
+import javafx.scene.shape.Line;
 
 public class SegmentState implements State{
 
     @Override
-    public void drawShape(ColorPicker borderColorPicker,ColorPicker interiorColorPicker, GraphicsContext graphicsContext, double startDragX, double startDragY, double finalDragX, double finalDragY) {
-        graphicsContext.setStroke(borderColorPicker.getValue());
-        graphicsContext.strokeLine(startDragX, startDragY,finalDragX,finalDragY); 
+    public void drawShape(Pane drawingWindow, ColorPicker borderColorPicker,ColorPicker interiorColorPicker,double startDragX, double startDragY, double finalDragX, double finalDragY) {
+
+        finalDragX = finalDragX < 0.0 ? 0.0 : finalDragX;
+        startDragX = startDragX < 0.0 ? 0.0 : startDragX;
+        finalDragY = finalDragY < 0.0 ? 0.0 : finalDragY;
+        startDragY = startDragY < 0.0 ? 0.0 : startDragY;
+
+        Line line = new Line();
         
+        line.setStartX(startDragX);
+        line.setEndX(finalDragX);
+
+        line.setStartY(startDragY);
+        line.setEndY(finalDragY);
+
+        line.setStroke(borderColorPicker.getValue());   
+        
+        drawingWindow.getChildren().addAll(line);
     }
     @Override
     public ObservableBooleanValue isNotSegmentState() {

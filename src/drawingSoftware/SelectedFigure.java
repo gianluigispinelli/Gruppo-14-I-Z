@@ -1,7 +1,7 @@
 package drawingSoftware;
 import javafx.beans.value.ObservableBooleanValue;
-import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.control.ColorPicker;
+import javafx.scene.layout.Pane;
 
 /*
  * 
@@ -33,9 +33,9 @@ public class SelectedFigure{
     * @param {startDragX, startDragY} initial coordinates of left-click in the canvas
     * @param {finalDragX, finalDragY} final coordinates of released left-click in the canvas
     */
-    public void drawShape(ColorPicker borderColorPicker, ColorPicker inteColorPicker, GraphicsContext graphicsContext, double startDragX, double startDragY, double finalDragX, double finalDragY){
+    public void drawShape(Pane drawableWindow, ColorPicker borderColorPicker, ColorPicker inteColorPicker, double startDragX, double startDragY, double finalDragX, double finalDragY){
         
-        s.drawShape(borderColorPicker, inteColorPicker, graphicsContext, startDragX, startDragY, finalDragX, finalDragY);
+         s.drawShape(drawableWindow, borderColorPicker, inteColorPicker, startDragX, startDragY, finalDragX, finalDragY);
     }
 
     public State getState(){

@@ -1,6 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<?import javafx.scene.canvas.Canvas?>
 <?import javafx.scene.control.Button?>
 <?import javafx.scene.control.ColorPicker?>
 <?import javafx.scene.control.Label?>
@@ -89,7 +88,7 @@
          <center>
             <Pane fx:id="paneDrawableWindow" prefHeight="513.0" prefWidth="693.0" style="-fx-background-color: white;">
                <children>
-                  <Canvas fx:id="drawingWindow" height="518.0" layoutY="-1.0" width="697.0" />
+                  <Pane fx:id="drawingWindow" prefHeight="514.0" prefWidth="697.0" />
                </children>
             </Pane>
          </center>
