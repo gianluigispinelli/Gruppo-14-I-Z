@@ -73,6 +73,10 @@ public class Controller implements Initializable{
     @FXML
     private Button segmentButton;
 
+    
+    @FXML
+    private Button selectButton;
+
     private double startDragX;
     private double startDragY;
 
@@ -186,6 +190,13 @@ public class Controller implements Initializable{
             drawingWindow.getChildren().remove(border);
             drawingWindow.getChildren().remove(shape);
         }
+    }
+
+    @FXML
+    void select(ActionEvent event) {
+        selectedFigure.changeState(new SelectState());
+
+
     }
 
     private void setInteriorColorPickerVisible(){
