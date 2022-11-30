@@ -7,8 +7,16 @@ import java.io.File;
 import java.net.URL;
 import java.util.ResourceBundle;
 
+import javax.sound.sampled.SourceDataLine;
 
+import javafx.beans.binding.Bindings;
+import javafx.beans.property.BooleanProperty;
+import javafx.beans.property.SimpleBooleanProperty;
+import javafx.beans.value.ChangeListener;
+import javafx.beans.value.ObservableBooleanValue;
+import javafx.beans.value.ObservableValue;
 import javafx.event.ActionEvent;
+import javafx.event.Event;
 import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
@@ -20,6 +28,10 @@ import javafx.scene.control.Label;
 import javafx.scene.control.Menu;
 import javafx.scene.control.MenuItem;
 import javafx.scene.control.ScrollPane;
+import javafx.scene.input.KeyCode;
+import javafx.scene.input.KeyCodeCombination;
+import javafx.scene.input.KeyCombination;
+import javafx.scene.input.KeyEvent;
 import javafx.scene.input.MouseButton;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.AnchorPane;
@@ -72,10 +84,12 @@ public class Controller implements Initializable{
 
     @FXML
     private Button segmentButton;
-
     
     @FXML
     private Button selectButton;
+
+    @FXML
+    private MenuItem undoItem;
 
     private double startDragX;
     private double startDragY;
@@ -95,7 +109,7 @@ public class Controller implements Initializable{
      */
     @Override
     public void initialize(URL location, ResourceBundle resources) {
-        
+
         scrollPane.setContent(drawingWindow);
 
         /* INIZIALIZZAZIONE VARIABILI PER CARICAMENTO FILE */
@@ -135,11 +149,16 @@ public class Controller implements Initializable{
         }
         });
         setInteriorColorPickerVisible();
+
+        /*
+         * UNDO FUNCTION
+         */
+        undoItem.setAccelerator(new KeyCodeCombination(KeyCode.Z, KeyCombination.CONTROL_DOWN));
+        
     }
  
     @FXML
     void onEllipseClick(ActionEvent event) {
-        
         selectedFigure.changeState(new EllipseState());
         setInteriorColorPickerVisible();
     }
@@ -195,8 +214,13 @@ public class Controller implements Initializable{
     @FXML
     void select(ActionEvent event) {
         selectedFigure.changeState(new SelectState());
+    }
 
-
+    @FXML
+    void undo(ActionEvent event){
+        int n_elements = drawingWindow.getChildren().size();
+        if (n_elements>0)
+        drawingWindow.getChildren().remove(n_elements-1);
     }
 
     private void setInteriorColorPickerVisible(){

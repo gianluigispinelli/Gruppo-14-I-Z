@@ -67,6 +67,8 @@ public class SegmentState implements State{
                     border.setY(y);
                     border.setFill(javafx.scene.paint.Color.TRANSPARENT);
                     border.setStroke(javafx.scene.paint.Color.BLUE);
+                    border.getStrokeDashArray().addAll(25d, 10d);
+
                     
                     Node removeBorder = drawingWindow.lookup("#selected");
                     Node changeId = drawingWindow.lookup("#selectedShape");
@@ -85,7 +87,6 @@ public class SegmentState implements State{
     public ObservableBooleanValue isNotSegmentState() {
         ObservableBooleanValue visible = new SimpleBooleanProperty(false);
         return visible;
-        
     }
     
 }

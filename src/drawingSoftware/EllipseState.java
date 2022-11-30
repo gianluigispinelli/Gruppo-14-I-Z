@@ -85,7 +85,6 @@ public class EllipseState implements State{
                     double strokewidth = e.getStrokeWidth();
                     double x = e.getCenterX();
                     double y = e.getCenterY();
-                    
                     /*
                      * border: questo rettangolo evidenzia la figura selezionata
                      * vengono prese anche le dimensioni del bordo, nel caso in cui la figura ha un bordo più spesso.
@@ -102,6 +101,7 @@ public class EllipseState implements State{
                     border.setY(y - strokewidth/2.0 - height/2);
                     border.setFill(javafx.scene.paint.Color.TRANSPARENT);
                     border.setStroke(javafx.scene.paint.Color.BLUE);
+                    border.getStrokeDashArray().addAll(25d, 10d);
                     
                     // removeOtherBorder();
                     Node removeBorder = drawableWindow.lookup("#selected");
@@ -112,7 +112,6 @@ public class EllipseState implements State{
                     drawableWindow.getChildren().remove(removeBorder);
                     drawableWindow.getChildren().add(border);  
             }
-            
         });
 
         drawableWindow.getChildren().add(e);      

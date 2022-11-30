@@ -79,11 +79,6 @@ public class RectangleState implements State{
          * è quella chiamata drawingWindow ed è presente nel file FXML "mainInteface".
          * 
          */
-
-       
-
-        
-         
         r.addEventFilter(MouseEvent.MOUSE_CLICKED, new EventHandler<MouseEvent>() {
 
             @Override
@@ -110,6 +105,7 @@ public class RectangleState implements State{
                     border.setY(y - strokewidth/2.0);
                     border.setFill(javafx.scene.paint.Color.TRANSPARENT);
                     border.setStroke(javafx.scene.paint.Color.BLUE);
+                    border.getStrokeDashArray().addAll(25d, 10d);
                     
                     // removeOtherBorder();
                     Node removeBorder = drawableWindow.lookup("#selected");

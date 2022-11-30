@@ -28,6 +28,7 @@
                            <items>
                               <MenuItem fx:id="saveItem" mnemonicParsing="false" onAction="#onSave" text="Save" />
                               <MenuItem fx:id="loadItem" mnemonicParsing="false" onAction="#onLoad" text="Load" />
+                              <MenuItem fx:id="undoItem" mnemonicParsing="false" onAction="#undo" text="Undo" />
                            </items>
                       </Menu>
                     </menus>

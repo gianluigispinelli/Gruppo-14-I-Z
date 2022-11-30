@@ -9,5 +9,6 @@ import javafx.scene.layout.Pane;
 public interface State{
     //TODO: Valutare se serve aggiungere istanza di Context (SelectedFigure) come nel pattern
     public void drawShape(Pane drawableWindow, ColorPicker borderColorPicker, ColorPicker interiorColorPicker,double startDragX, double startDragY, double finalDragX, double finalDragY);
+    
     public ObservableBooleanValue isNotSegmentState();
 }
