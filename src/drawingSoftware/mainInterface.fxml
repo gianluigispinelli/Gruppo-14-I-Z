@@ -29,6 +29,9 @@
                               <MenuItem fx:id="saveItem" mnemonicParsing="false" onAction="#onSave" text="Save" />
                               <MenuItem fx:id="loadItem" mnemonicParsing="false" onAction="#onLoad" text="Load" />
                               <MenuItem fx:id="undoItem" mnemonicParsing="false" onAction="#undo" text="Undo" />
+                              <MenuItem fx:id="copyItem" mnemonicParsing="false" onAction="#copyAShape" text="Copy" />
+                              <MenuItem fx:id="pasteItem" mnemonicParsing="false" onAction="#pasteAShape" text="Paste" />
+                              <MenuItem fx:id="cutItem" mnemonicParsing="false" onAction="#cutAShape" text="Cut" />
                            </items>
                       </Menu>
                     </menus>
