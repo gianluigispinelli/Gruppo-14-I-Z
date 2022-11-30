@@ -6,25 +6,30 @@ import javafx.stage.FileChooser;
 import java.io.File;
 import java.net.URL;
 import java.util.ResourceBundle;
+
+
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.Cursor;
+import javafx.scene.Node;
 import javafx.scene.control.Button;
 import javafx.scene.control.ColorPicker;
 import javafx.scene.control.Label;
 import javafx.scene.control.Menu;
 import javafx.scene.control.MenuItem;
+import javafx.scene.control.ScrollPane;
 import javafx.scene.input.MouseButton;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.Pane;
-import javafx.scene.canvas.GraphicsContext;
 
 public class Controller implements Initializable{
 
+    @FXML
+    private Button deleteBtn;
 
     @FXML
     private AnchorPane ancorPane;
@@ -43,6 +48,9 @@ public class Controller implements Initializable{
     
     @FXML
     private Pane drawingWindow;
+
+    @FXML
+    private ScrollPane scrollPane;
 
     @FXML
     private Button ellipseButton;
@@ -65,11 +73,8 @@ public class Controller implements Initializable{
     @FXML
     private Button segmentButton;
 
-
-
     private double startDragX;
     private double startDragY;
-    private GraphicsContext gc;
 
     private SelectedFigure selectedFigure; 
 
@@ -77,7 +82,6 @@ public class Controller implements Initializable{
     FileChooser filechooser = new FileChooser();
     Receiver receiver = new Receiver();
     FileInvoker fileInvoker = new FileInvoker();    
-
 
     /*
      * stroke = contorno
@@ -87,12 +91,13 @@ public class Controller implements Initializable{
      */
     @Override
     public void initialize(URL location, ResourceBundle resources) {
+        
+        scrollPane.setContent(drawingWindow);
 
         /* INIZIALIZZAZIONE VARIABILI PER CARICAMENTO FILE */
         // fc.setInitialDirectory(new File("/home/gianluigi/VSC Workspace/JavaProjects/ProgettoSE/Progetto/src/project"));
         filechooser.setInitialDirectory(new File("."));  // apro cartella corrente
         filechooser.getExtensionFilters().add(new FileChooser.ExtensionFilter("images", "*.png")); // filechooser mi mostra solo png
-  
 
         selectedFigure = new SelectedFigure(new SegmentState());
         
@@ -100,9 +105,14 @@ public class Controller implements Initializable{
         interiorColorPicker.setValue(Color.WHITE);
         
         //this event because user must know where he can draw.
-        drawingWindow.setOnMouseExited(e->{
+        // drawingWindow.setOnMouseExited(e->{
+        //     drawingWindow.setCursor(Cursor.CROSSHAIR);
+        // });
+
+        drawingWindow.setOnMouseEntered(e->{
             drawingWindow.setCursor(Cursor.CROSSHAIR);
         });
+
         drawingWindow.setOnMousePressed(e -> {
             if(e.getButton() == MouseButton.PRIMARY){
             startDragX = e.getX();
@@ -166,6 +176,18 @@ public class Controller implements Initializable{
         this.fileInvoker.setCommand(saveCommand);
         this.fileInvoker.executeCommand();
     } 
+
+    @FXML
+    void deleteShape(ActionEvent event){
+        Node border = drawingWindow.lookup("#selected");
+        Node shape = drawingWindow.lookup("#selectedShape");
+
+        if (border != null && shape!= null){
+            drawingWindow.getChildren().remove(border);
+            drawingWindow.getChildren().remove(shape);
+        }
+    }
+
     private void setInteriorColorPickerVisible(){
         interiorColorPicker.visibleProperty().bind(selectedFigure.getSegmentState());
         chooseInteriorColorLabel.visibleProperty().bind(selectedFigure.getSegmentState());

@@ -6,6 +6,7 @@
 <?import javafx.scene.control.Menu?>
 <?import javafx.scene.control.MenuBar?>
 <?import javafx.scene.control.MenuItem?>
+<?import javafx.scene.control.ScrollPane?>
 <?import javafx.scene.control.ToolBar?>
 <?import javafx.scene.image.Image?>
 <?import javafx.scene.image.ImageView?>
@@ -80,17 +81,18 @@
                                  </children>
                               </HBox>
                            </children></VBox>
+                        <Button fx:id="deleteBtn" mnemonicParsing="false" onAction="#deleteShape" text="DeleteShape" />
                      </items>
                   </ToolBar>
                </children>
             </VBox>
          </top>
          <center>
-            <Pane fx:id="paneDrawableWindow" prefHeight="513.0" prefWidth="693.0" style="-fx-background-color: white;">
-               <children>
-                  <Pane fx:id="drawingWindow" prefHeight="514.0" prefWidth="697.0" />
-               </children>
-            </Pane>
+            <ScrollPane fx:id="scrollPane" prefHeight="200.0" prefWidth="200.0" BorderPane.alignment="CENTER">
+               <content>
+                  <Pane fx:id="drawingWindow" prefHeight="1080.0" prefWidth="1920.0" />
+               </content>
+            </ScrollPane>
          </center>
       </BorderPane>
    </children>

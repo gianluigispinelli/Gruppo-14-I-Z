@@ -3,9 +3,13 @@ package drawingSoftware;
 
 import javafx.beans.property.SimpleBooleanProperty;
 import javafx.beans.value.ObservableBooleanValue;
+import javafx.event.EventHandler;
+import javafx.scene.Node;
 import javafx.scene.control.ColorPicker;
+import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.Pane;
 import javafx.scene.shape.Ellipse;
+import javafx.scene.shape.Rectangle;
 
 public class EllipseState implements State{
 
@@ -72,6 +76,45 @@ public class EllipseState implements State{
          * come figlio della Pane che è stata passata a questa funzione. La pane in questione
          * è quella chiamata drawingWindow ed è presente nel file FXML "mainInteface".
          */
+        e.addEventFilter(MouseEvent.MOUSE_CLICKED, new EventHandler<MouseEvent>() {
+
+            @Override
+            public void handle(MouseEvent event) {
+                double width = e.getLayoutBounds().getWidth();
+                    double height = e.getLayoutBounds().getHeight();
+                    double strokewidth = e.getStrokeWidth();
+                    double x = e.getCenterX();
+                    double y = e.getCenterY();
+                    
+                    /*
+                     * border: questo rettangolo evidenzia la figura selezionata
+                     * vengono prese anche le dimensioni del bordo, nel caso in cui la figura ha un bordo più spesso.
+                     * (x,y) del border sono le coordinate del punto in alto a sinistra.
+                     * per fare in modo che comprende anche il bordo più spesso viene sottratta alle coord (x,y)
+                     * la dimensione della strokewidth della figura selezionata e divide per 2. 
+                     */
+
+                    Rectangle border = new Rectangle();
+                    border.setId("selected");
+                    border.setWidth(width);
+                    border.setHeight(height);
+                    border.setX(x - strokewidth/2.0 - width/2);
+                    border.setY(y - strokewidth/2.0 - height/2);
+                    border.setFill(javafx.scene.paint.Color.TRANSPARENT);
+                    border.setStroke(javafx.scene.paint.Color.BLUE);
+                    
+                    // removeOtherBorder();
+                    Node removeBorder = drawableWindow.lookup("#selected");
+                    Node changeId = drawableWindow.lookup("#selectedShape");
+                    if (changeId!=null)
+                    changeId.setId("");
+                    e.setId("selectedShape");
+                    drawableWindow.getChildren().remove(removeBorder);
+                    drawableWindow.getChildren().add(border);  
+            }
+            
+        });
+
         drawableWindow.getChildren().add(e);      
     }
     

@@ -1,11 +1,17 @@
 package drawingSoftware;
+
 import javafx.beans.property.SimpleBooleanProperty;
 import javafx.beans.value.ObservableBooleanValue;
+import javafx.event.EventHandler;
+import javafx.scene.Node;
 import javafx.scene.control.ColorPicker;
+import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.Pane;
 import javafx.scene.shape.Rectangle;
 
 public class RectangleState implements State{
+
+    
 
     @Override
     public void drawShape(Pane drawableWindow, ColorPicker borderColorPicker, ColorPicker interiorColorPicker,double startDragX, double startDragY, double finalDragX, double finalDragY) {
@@ -28,8 +34,7 @@ public class RectangleState implements State{
          * iniziato il drag e quello dove è finito. 
          */
 
-        
-
+    
         if (startDragX < finalDragX){
             r.setX(startDragX);    
         }
@@ -72,7 +77,51 @@ public class RectangleState implements State{
         /* L'ellipse in questo caso è un nodo: verrà aggiunto alla fine di questo metodo 
          * come figlio della Pane che è stata passata a questa funzione. La pane in questione
          * è quella chiamata drawingWindow ed è presente nel file FXML "mainInteface".
+         * 
          */
+
+       
+
+        
+         
+        r.addEventFilter(MouseEvent.MOUSE_CLICKED, new EventHandler<MouseEvent>() {
+
+            @Override
+            public void handle(MouseEvent event) {
+                double width = r.getLayoutBounds().getWidth();
+                    double height = r.getLayoutBounds().getHeight();
+                    double strokewidth = r.getStrokeWidth();
+                    double x = r.getX();
+                    double y = r.getY();
+                    
+                    /*
+                     * border: questo rettangolo evidenzia la figura selezionata
+                     * vengono prese anche le dimensioni del bordo, nel caso in cui la figura ha un bordo più spesso.
+                     * (x,y) del border sono le coordinate del punto in alto a sinistra.
+                     * per fare in modo che comprende anche il bordo più spesso viene sottratta alle coord (x,y)
+                     * la dimensione della strokewidth della figura selezionata e divide per 2. 
+                     */
+
+                    Rectangle border = new Rectangle();
+                    border.setId("selected");
+                    border.setWidth(width);
+                    border.setHeight(height);
+                    border.setX(x - strokewidth/2.0);
+                    border.setY(y - strokewidth/2.0);
+                    border.setFill(javafx.scene.paint.Color.TRANSPARENT);
+                    border.setStroke(javafx.scene.paint.Color.BLUE);
+                    
+                    // removeOtherBorder();
+                    Node removeBorder = drawableWindow.lookup("#selected");
+                    Node changeId = drawableWindow.lookup("#selectedShape");
+                    if (changeId!=null)
+                    changeId.setId("");
+                    r.setId("selectedShape");
+                    
+                    drawableWindow.getChildren().remove(removeBorder);
+                    drawableWindow.getChildren().add(border);  
+            }
+        });
         drawableWindow.getChildren().add(r);      
     }
     
