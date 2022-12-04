@@ -1,4 +1,4 @@
-package drawingSoftware;
+package drawingSoftware.State;
 
 import javafx.beans.property.SimpleBooleanProperty;
 import javafx.beans.value.ObservableBooleanValue;

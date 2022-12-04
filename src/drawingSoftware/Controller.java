@@ -20,6 +20,16 @@ import drawingSoftware.Editor.CutCommand;
 import drawingSoftware.Editor.Editor;
 import drawingSoftware.Editor.EditorInvoker;
 import drawingSoftware.Editor.PasteCommand;
+import drawingSoftware.Load.Save.Command;
+import drawingSoftware.Load.Save.FileInvoker;
+import drawingSoftware.Load.Save.LoadCommand;
+import drawingSoftware.Load.Save.Receiver;
+import drawingSoftware.Load.Save.SaveCommand;
+import drawingSoftware.State.EllipseState;
+import drawingSoftware.State.RectangleState;
+import drawingSoftware.State.SegmentState;
+import drawingSoftware.State.SelectState;
+import drawingSoftware.State.SelectedFigure;
 import javafx.beans.binding.Bindings;
 import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.SimpleBooleanProperty;
@@ -39,6 +49,8 @@ import javafx.scene.control.Label;
 import javafx.scene.control.Menu;
 import javafx.scene.control.MenuItem;
 import javafx.scene.control.ScrollPane;
+import javafx.scene.input.Clipboard;
+import javafx.scene.input.ClipboardContent;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyCodeCombination;
 import javafx.scene.input.KeyCombination;
@@ -187,34 +199,32 @@ public class Controller implements Initializable{
         loadItem.setAccelerator(new KeyCodeCombination(KeyCode.O, KeyCombination.CONTROL_DOWN));
     }
 
-    /*
-     * Da fare il refactoring con COMMAND
-     * @Da inserire nel receiver
-     */
     @FXML
     void copyAShape(ActionEvent event) {
-        CopyCommand copycommand = new CopyCommand(editor, drawingWindow);
-        editorInvoker.setCommand(copycommand);
-        editorInvoker.executeCommand();
+        // CopyCommand copycommand = new CopyCommand(editor, drawingWindow);
+        // editorInvoker.setCommand(copycommand);
+        // editorInvoker.executeCommand();
+        System.out.println("copia");
+        Clipboard cp = Clipboard.getSystemClipboard();
+        ClipboardContent cpCnt = new ClipboardContent();
+        cpCnt.put(null, cpCnt);
+        cp.setContent(cpCnt);
     }
 
     @FXML
     void cutAShape(ActionEvent event) {
-        CutCommand cutCommand = new CutCommand(editor, drawingWindow);
-        editorInvoker.setCommand(cutCommand);
-        editorInvoker.executeCommand();
+        // CutCommand cutCommand = new CutCommand(editor, drawingWindow);
+        // editorInvoker.setCommand(cutCommand);
+        // editorInvoker.executeCommand();
+        System.out.println("cut");
     }
-
-    /*
-     * Da fare il refactoring con COMMAND
-     * @Da inserire nel receiver
-     */
 
     @FXML
     void pasteAShape(ActionEvent event) {
-        PasteCommand pasteCommand = new PasteCommand(editor, drawingWindow);
-        editorInvoker.setCommand(pasteCommand);
-        editorInvoker.executeCommand();
+        // PasteCommand pasteCommand = new PasteCommand(editor, drawingWindow);
+        // editorInvoker.setCommand(pasteCommand);
+        // editorInvoker.executeCommand();
+        System.out.println("paste");
     }    
  
     @FXML

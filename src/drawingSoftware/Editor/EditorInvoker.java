@@ -1,6 +1,6 @@
 package drawingSoftware.Editor;
 
-import drawingSoftware.Command;
+import drawingSoftware.Load.Save.Command;
 
 public class EditorInvoker {
 

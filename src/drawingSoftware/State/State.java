@@ -1,4 +1,4 @@
-package drawingSoftware;
+package drawingSoftware.State;
 
 import javafx.beans.value.ObservableBooleanValue;
 import javafx.scene.control.ColorPicker;

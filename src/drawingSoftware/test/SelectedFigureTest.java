@@ -2,9 +2,10 @@ package drawingSoftware.test;
 
 import static org.junit.Assert.*;
 import org.junit.*;
-import drawingSoftware.SegmentState;
-import drawingSoftware.SelectedFigure;
-import drawingSoftware.State;
+
+import drawingSoftware.State.SegmentState;
+import drawingSoftware.State.SelectedFigure;
+import drawingSoftware.State.State;
 
 public class SelectedFigureTest {
     

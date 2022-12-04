@@ -1,4 +1,4 @@
-package drawingSoftware;
+package drawingSoftware.Load.Save;
 
 import java.io.File;
 import java.io.FileInputStream;

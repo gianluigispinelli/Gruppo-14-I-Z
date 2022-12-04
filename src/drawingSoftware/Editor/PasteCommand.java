@@ -1,6 +1,6 @@
 package drawingSoftware.Editor;
 
-import drawingSoftware.Command;
+import drawingSoftware.Load.Save.Command;
 import javafx.scene.layout.Pane;
 
 public class PasteCommand implements Command{

@@ -1,4 +1,4 @@
-package drawingSoftware;
+package drawingSoftware.State;
 import java.util.ArrayList;
 
 import javafx.beans.value.ObservableBooleanValue;
