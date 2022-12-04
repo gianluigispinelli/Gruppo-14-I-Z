@@ -1,7 +1,12 @@
 package drawingSoftware.Editor;
 
+
+import java.util.Stack;
+
 import drawingSoftware.Model;
 import drawingSoftware.Load.Save.Command;
+import javafx.collections.ObservableList;
+import javafx.scene.Node;
 
 /*
 
@@ -11,12 +16,13 @@ public class UndoCommand implements Command{
 
     private Model model; 
 
+
     public UndoCommand(Model model){
         this.model = model; 
     }
 
     @Override
     public void execute() {         /* undo method */
-        model.removeLast();
+        this.model.backup();    /* backup to a previuos state of the drawingWindow */
     }     
 }

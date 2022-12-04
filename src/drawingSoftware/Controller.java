@@ -6,7 +6,7 @@ import javafx.stage.FileChooser;
 import java.io.File;
 import java.net.URL;
 import java.util.ResourceBundle;
-
+import java.util.Stack;
 
 import drawingSoftware.Editor.CopyCommand;
 import drawingSoftware.Editor.CutCommand;
@@ -25,6 +25,7 @@ import drawingSoftware.State.SegmentState;
 import drawingSoftware.State.SelectState;
 import drawingSoftware.State.SelectedFigure;
 import javafx.collections.ListChangeListener;
+import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.fxml.FXML;
@@ -122,6 +123,7 @@ public class Controller implements Initializable{
      */
     Editor editor; 
     EditorInvoker editorInvoker;
+    Stack<ObservableList<Node>> history;
     Model model; 
 
     /*
@@ -134,6 +136,8 @@ public class Controller implements Initializable{
     public void initialize(URL location, ResourceBundle resources) {
 
         model = new Model();          /* Model dove mi salvo le shapes che aggiungo */
+        history = new Stack<ObservableList<Node>>();
+
         /*
          * Il controller fa da intermediario tra il model delle figure aggiunte e cosa succede nella view
          */
