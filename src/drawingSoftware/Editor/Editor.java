@@ -1,7 +1,8 @@
-package drawingSoftware;
+package drawingSoftware.Editor;
 
 
 
+import drawingSoftware.Model;
 import javafx.event.EventHandler;
 import javafx.scene.Node;
 import javafx.scene.input.MouseEvent;

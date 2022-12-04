@@ -1,4 +1,5 @@
-package drawingSoftware;
+package drawingSoftware.Tool;
+
 
 import java.util.ArrayList;
 import javafx.beans.value.ObservableBooleanValue;
@@ -30,16 +31,7 @@ public class SelectedToolContext{
         this.borderColorPicker = borderColorPicker;
         this.fillColorPicker = fillColorPicker;    
     }
-
-    /**
-     * 
-     */
-
-        
-
-
-
-
+    
     public void changeTool(Tool currentTool){
         this.currentTool = currentTool;
         currentTool.useSelectedTool(borderColorPicker, fillColorPicker);

@@ -1,8 +1,9 @@
-package drawingSoftware;
+package drawingSoftware.Editor;
 
 
 import java.util.Stack;
 
+import drawingSoftware.Model;
 import javafx.collections.ObservableList;
 import javafx.scene.Node;
 

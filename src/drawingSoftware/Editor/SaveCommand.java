@@ -1,5 +1,6 @@
-package drawingSoftware;
+package drawingSoftware.Editor;
 
+import drawingSoftware.Receiver;
 import javafx.scene.layout.Pane;
 
 public class SaveCommand implements Command {

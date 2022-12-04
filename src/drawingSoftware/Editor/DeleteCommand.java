@@ -1,5 +1,6 @@
-package drawingSoftware;
+package drawingSoftware.Editor;
 
+import drawingSoftware.Model;
 import javafx.scene.Node;
 import javafx.scene.layout.Pane;
 

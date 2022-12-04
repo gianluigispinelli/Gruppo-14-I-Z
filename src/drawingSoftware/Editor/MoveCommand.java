@@ -1,5 +1,6 @@
-package drawingSoftware;
+package drawingSoftware.Editor;
 
+import drawingSoftware.Model;
 import javafx.scene.shape.Shape;
 
 public class MoveCommand implements Command{

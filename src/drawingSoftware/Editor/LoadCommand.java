@@ -1,5 +1,6 @@
-package drawingSoftware;
+package drawingSoftware.Editor;
 
+import drawingSoftware.Receiver;
 import javafx.scene.layout.Pane;
 import javafx.stage.FileChooser;
 

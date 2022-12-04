@@ -1,4 +1,4 @@
-package drawingSoftware;
+package drawingSoftware.Editor;
 
 public class EditorInvoker {
 

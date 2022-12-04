@@ -1,5 +1,9 @@
-package drawingSoftware;
+package drawingSoftware.Tool;
 
+
+import drawingSoftware.FileInvoker;
+import drawingSoftware.Model;
+import drawingSoftware.Editor.MoveCommand;
 import javafx.beans.property.SimpleBooleanProperty;
 import javafx.beans.value.ObservableBooleanValue;
 
