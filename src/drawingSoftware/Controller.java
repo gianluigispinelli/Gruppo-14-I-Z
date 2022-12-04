@@ -2,30 +2,27 @@ package drawingSoftware;
 
 import javafx.scene.paint.Color;
 import javafx.stage.FileChooser;
-
 import java.io.File;
 import java.net.URL;
 import java.util.ResourceBundle;
 import javafx.event.ActionEvent;
-import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.Cursor;
-import javafx.scene.canvas.Canvas;
 import javafx.scene.control.Button;
 import javafx.scene.control.ColorPicker;
 import javafx.scene.control.Label;
 import javafx.scene.control.Menu;
 import javafx.scene.control.MenuItem;
-import javafx.scene.input.MouseButton;
-import javafx.scene.input.MouseEvent;
+import javafx.scene.control.ScrollPane;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.Pane;
-import javafx.scene.canvas.GraphicsContext;
 
 public class Controller implements Initializable{
 
+    @FXML
+    private Button deleteBtn;
 
     @FXML
     private AnchorPane ancorPane;
@@ -43,7 +40,10 @@ public class Controller implements Initializable{
     private Pane paneDrawableWindow;
     
     @FXML
-    private Canvas drawingWindow;
+    private Pane drawingWindow;
+
+    @FXML
+    private ScrollPane scrollPane;
 
     @FXML
     private Button ellipseButton;
@@ -66,19 +66,19 @@ public class Controller implements Initializable{
     @FXML
     private Button segmentButton;
 
+    
+    @FXML
+    private Button selectButton;
 
 
-    private double startDragX;
-    private double startDragY;
-    private GraphicsContext gc;
+    
 
-    private SelectedFigure selectedFigure; 
+    private SelectedToolContext selectedFigure; 
 
     /*FILE CHOOSER */
     FileChooser filechooser = new FileChooser();
     Receiver receiver = new Receiver();
     FileInvoker fileInvoker = new FileInvoker();    
-
 
     /*
      * stroke = contorno
@@ -88,61 +88,44 @@ public class Controller implements Initializable{
      */
     @Override
     public void initialize(URL location, ResourceBundle resources) {
+        
+
+        
+        scrollPane.setContent(drawingWindow);
+        this.setCursorCrosschair();
 
         /* INIZIALIZZAZIONE VARIABILI PER CARICAMENTO FILE */
         // fc.setInitialDirectory(new File("/home/gianluigi/VSC Workspace/JavaProjects/ProgettoSE/Progetto/src/project"));
         filechooser.setInitialDirectory(new File("."));  // apro cartella corrente
         filechooser.getExtensionFilters().add(new FileChooser.ExtensionFilter("images", "*.png")); // filechooser mi mostra solo png
-  
 
-        selectedFigure = new SelectedFigure(new SegmentState());
         
-        gc = drawingWindow.getGraphicsContext2D();
         
         borderColorPicker.setValue(Color.BLACK);
         interiorColorPicker.setValue(Color.WHITE);
-        
-        //this event because user must know where he can draw.
-        drawingWindow.setOnMouseExited(e->{
-            drawingWindow.setCursor(Cursor.CROSSHAIR);
-        });
-        drawingWindow.setOnMousePressed(e -> {
-            if(e.getButton() == MouseButton.PRIMARY){
-            startDragX = e.getX();
-            startDragY = e.getY();
-            }
-        });
-        //event filter because mouse move quickly ad 
-        drawingWindow.addEventFilter(MouseEvent.MOUSE_RELEASED, new EventHandler<MouseEvent>() {
-            @Override
-            public void handle(MouseEvent e) {
-                if(e.getButton() == MouseButton.PRIMARY){
-                double finalDragX = e.getX();
-                double finalDragY = e.getY();
-                selectedFigure.drawShape(borderColorPicker, interiorColorPicker, gc, startDragX, startDragY, finalDragX, finalDragY);
-            }
-        }
-        });
+
+        selectedFigure = new SelectedToolContext(new RectangleTool(drawingWindow), drawingWindow, borderColorPicker, interiorColorPicker);
+
         setInteriorColorPickerVisible();
     }
  
     @FXML
     void onEllipseClick(ActionEvent event) {
         
-        selectedFigure.changeState(new EllipseState());
+        selectedFigure.changeTool(new EllipseTool(drawingWindow));
         setInteriorColorPickerVisible();
     }
 
     @FXML
     void onLineClick(ActionEvent event) {
-        selectedFigure.changeState(new SegmentState());
+        selectedFigure.changeTool(new LineTool(drawingWindow));
         setInteriorColorPickerVisible();
     }
 
     @FXML
     void onRectangleClick(ActionEvent event) {
         
-        selectedFigure.changeState(new RectangleState());
+        selectedFigure.changeTool(new RectangleTool(drawingWindow));
         setInteriorColorPickerVisible();
     }
 
@@ -158,7 +141,7 @@ public class Controller implements Initializable{
 
     @FXML
     void onLoad(ActionEvent event) {
-        Command command = new LoadCommand(receiver, filechooser, gc);
+        Command command = new LoadCommand(receiver, filechooser, drawingWindow);
         fileInvoker.setCommand(command);
         fileInvoker.executeCommand();
     }
@@ -169,9 +152,30 @@ public class Controller implements Initializable{
         this.fileInvoker.setCommand(saveCommand);
         this.fileInvoker.executeCommand();
     } 
+
+    @FXML
+    void deleteShape(ActionEvent event){
+        DeleteCommand deleteCommand =  new DeleteCommand(drawingWindow);
+        this.fileInvoker.setCommand(deleteCommand);
+        this.fileInvoker.executeCommand();
+    }
+
+    @FXML
+    void select(ActionEvent event) {
+        selectedFigure.changeTool(new SelectTool(drawingWindow));
+        setInteriorColorPickerVisible();
+
+    }
+
     private void setInteriorColorPickerVisible(){
-        interiorColorPicker.visibleProperty().bind(selectedFigure.getSegmentState());
-        chooseInteriorColorLabel.visibleProperty().bind(selectedFigure.getSegmentState());
+        interiorColorPicker.visibleProperty().bind(selectedFigure.isLineTool());
+        chooseInteriorColorLabel.visibleProperty().bind(selectedFigure.isLineTool());
+    }
+
+    private void setCursorCrosschair(){
+        drawingWindow.setOnMouseEntered(e ->{
+            drawingWindow.setCursor(Cursor.CROSSHAIR);
+        });
     }
 }
 

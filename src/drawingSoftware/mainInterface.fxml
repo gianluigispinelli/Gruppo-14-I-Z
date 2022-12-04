@@ -1,12 +1,12 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<?import javafx.scene.canvas.Canvas?>
 <?import javafx.scene.control.Button?>
 <?import javafx.scene.control.ColorPicker?>
 <?import javafx.scene.control.Label?>
 <?import javafx.scene.control.Menu?>
 <?import javafx.scene.control.MenuBar?>
 <?import javafx.scene.control.MenuItem?>
+<?import javafx.scene.control.ScrollPane?>
 <?import javafx.scene.control.ToolBar?>
 <?import javafx.scene.image.Image?>
 <?import javafx.scene.image.ImageView?>
@@ -78,20 +78,22 @@
                                           </ImageView>
                                        </graphic>
                                     </Button>
+                                    <Button fx:id="selectButton" mnemonicParsing="false" onAction="#select" prefHeight="38.0" prefWidth="52.0" text="Select" />
                                  </children>
                               </HBox>
                            </children></VBox>
+                        <Button fx:id="deleteBtn" mnemonicParsing="false" onAction="#deleteShape" text="DeleteShape" />
                      </items>
                   </ToolBar>
                </children>
             </VBox>
          </top>
          <center>
-            <Pane fx:id="paneDrawableWindow" prefHeight="513.0" prefWidth="693.0" style="-fx-background-color: white;">
-               <children>
-                  <Canvas fx:id="drawingWindow" height="518.0" layoutY="-1.0" width="697.0" />
-               </children>
-            </Pane>
+            <ScrollPane fx:id="scrollPane" prefHeight="200.0" prefWidth="200.0" BorderPane.alignment="CENTER">
+               <content>
+                  <Pane fx:id="drawingWindow" prefHeight="1080.0" prefWidth="1920.0" />
+               </content>
+            </ScrollPane>
          </center>
       </BorderPane>
    </children>

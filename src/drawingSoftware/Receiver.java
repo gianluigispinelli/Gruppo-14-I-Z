@@ -3,27 +3,20 @@ package drawingSoftware;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
-
-import javafx.scene.canvas.Canvas;
-import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.image.Image;
+import javafx.scene.image.ImageView;
 import javafx.stage.FileChooser;
 import javafx.stage.Stage;
-
 import java.awt.image.RenderedImage;
-
 import java.io.IOException;
-
-
-
 import javax.imageio.ImageIO;
 import javafx.embed.swing.SwingFXUtils;
-
 import javafx.scene.image.WritableImage;
+import javafx.scene.layout.Pane;
 
 public class Receiver {
     
-    public void loadOperation(FileChooser fc, GraphicsContext graphicsContext){
+    public void loadOperation(FileChooser fc, Pane drawingWindow){
     // file chooser
     fc.setTitle("carica file");
 
@@ -32,15 +25,14 @@ public class Receiver {
 
     try {   // try catch perché l'immagine selezionata potrebbe non più esserci
         Image image = new Image(new FileInputStream(loadedFile), 700, 515, false, false);
-        graphicsContext.drawImage(image, 0, 0);
+        drawingWindow.getChildren().add(new ImageView(image));
         } catch (FileNotFoundException e1) {
-    // TODO Auto-generated catch block
         e1.printStackTrace();
         }
     }
 
  
-    public void save(Canvas screen){
+    public void save(Pane screen){
         Stage stage =  new Stage();
         
         FileChooser fileChooser = new FileChooser();
@@ -59,10 +51,9 @@ public class Receiver {
                 ex.printStackTrace();
                 System.out.println("Error!");
             }
-           
-
         }
     }
+
     
     
 }
