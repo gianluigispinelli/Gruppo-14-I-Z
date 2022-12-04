@@ -1,4 +1,4 @@
-package drawingSoftware.Load.Save;
+package drawingSoftware;
 
 import javafx.scene.layout.Pane;
 

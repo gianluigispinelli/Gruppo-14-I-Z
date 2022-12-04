@@ -1,12 +1,12 @@
-package drawingSoftware.State;
-import java.util.ArrayList;
+package drawingSoftware;
 
-import drawingSoftware.Model;
+import java.util.ArrayList;
 import javafx.beans.value.ObservableBooleanValue;
 import javafx.scene.Node;
 import javafx.scene.Parent;
 import javafx.scene.control.ColorPicker;
 import javafx.scene.layout.Pane;
+
 
 /*
  * 
@@ -14,21 +14,35 @@ import javafx.scene.layout.Pane;
  * 
  */
 
-public class SelectedFigure{
+public class SelectedToolContext{
     
-    private State s;
+    private Tool currentTool;
+    private ColorPicker borderColorPicker;
+    private ColorPicker fillColorPicker;
 
     
-    public SelectedFigure(State initialState){
+    public SelectedToolContext(Tool currentTool, Pane drawingWindow, ColorPicker borderColorPicker, ColorPicker fillColorPicker){
         /*
          * @param {State} initial state when I open the program
          * 
          */
-        this.s = initialState;
+        this.currentTool = currentTool;
+        this.borderColorPicker = borderColorPicker;
+        this.fillColorPicker = fillColorPicker;    
     }
 
-    public void changeState(State s){
-        this.s = s;
+    /**
+     * 
+     */
+
+        
+
+
+
+
+    public void changeTool(Tool currentTool){
+        this.currentTool = currentTool;
+        currentTool.useSelectedTool(borderColorPicker, fillColorPicker);
     }
 
     public static ArrayList<Node> getAllNodes(Parent root) {
@@ -36,7 +50,7 @@ public class SelectedFigure{
         addAllDescendents(root, nodes);
         return nodes;
     }
-
+    
     private static void addAllDescendents(Parent parent, ArrayList<Node> nodes) {
         for (Node node : parent.getChildrenUnmodifiable()) {
             nodes.add(node);
@@ -51,22 +65,19 @@ public class SelectedFigure{
     * @param {startDragX, startDragY} initial coordinates of left-click in the canvas
     * @param {finalDragX, finalDragY} final coordinates of released left-click in the canvas
     */
-    public void drawShape(Model model,Pane drawableWindow, ColorPicker borderColorPicker, ColorPicker inteColorPicker, double startDragX, double startDragY, double finalDragX, double finalDragY){
-        
-         s.drawShape(model, drawableWindow, borderColorPicker, inteColorPicker, startDragX, startDragY, finalDragX, finalDragY);
-    }
 
-    public State getState(){
+
+    public Tool getSelectedTool(){
         /*
          * @return {s} which shape button is pressed.
          */
-        return s;
+        return currentTool;
     }
     
-    public ObservableBooleanValue getSegmentState(){
+    public ObservableBooleanValue isLineTool(){
         /*
          * 
          */
-        return s.isNotSegmentState();  
+        return currentTool.isNotLineTool();  
     }
 }

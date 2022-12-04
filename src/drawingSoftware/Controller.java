@@ -2,32 +2,14 @@ package drawingSoftware;
 
 import javafx.scene.paint.Color;
 import javafx.stage.FileChooser;
-
 import java.io.File;
 import java.net.URL;
 import java.util.ResourceBundle;
 import java.util.Stack;
 
-import drawingSoftware.Editor.CopyCommand;
-import drawingSoftware.Editor.CutCommand;
-import drawingSoftware.Editor.Editor;
-import drawingSoftware.Editor.EditorInvoker;
-import drawingSoftware.Editor.PasteCommand;
-import drawingSoftware.Editor.UndoCommand;
-import drawingSoftware.Load.Save.Command;
-import drawingSoftware.Load.Save.FileInvoker;
-import drawingSoftware.Load.Save.LoadCommand;
-import drawingSoftware.Load.Save.Receiver;
-import drawingSoftware.Load.Save.SaveCommand;
-import drawingSoftware.State.EllipseState;
-import drawingSoftware.State.RectangleState;
-import drawingSoftware.State.SegmentState;
-import drawingSoftware.State.SelectState;
-import drawingSoftware.State.SelectedFigure;
 import javafx.collections.ListChangeListener;
 import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
-import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.Cursor;
@@ -111,7 +93,8 @@ public class Controller implements Initializable{
 
     private double startDragX;
     private double startDragY;
-    private SelectedFigure selectedFigure; 
+
+    private SelectedToolContext selectedFigure; 
 
     /*FILE CHOOSER */
     FileChooser filechooser = new FileChooser();
@@ -134,6 +117,9 @@ public class Controller implements Initializable{
      */
     @Override
     public void initialize(URL location, ResourceBundle resources) {
+        
+        scrollPane.setContent(drawingWindow);
+        this.setCursorCrosschair();
 
         model = new Model();          /* Model dove mi salvo le shapes che aggiungo */
         history = new Stack<ObservableList<Node>>();
@@ -164,42 +150,12 @@ public class Controller implements Initializable{
         // fc.setInitialDirectory(new File("/home/gianluigi/VSC Workspace/JavaProjects/ProgettoSE/Progetto/src/project"));
         filechooser.setInitialDirectory(new File("."));  // apro cartella corrente
         filechooser.getExtensionFilters().add(new FileChooser.ExtensionFilter("images", "*.png")); // filechooser mi mostra solo png
-
-        selectedFigure = new SelectedFigure(new SegmentState());
         
         borderColorPicker.setValue(Color.BLACK);
         interiorColorPicker.setValue(Color.WHITE);
-        
-        //this event because user must know where he can draw.
-        // drawingWindow.setOnMouseExited(e->{
-        //     drawingWindow.setCursor(Cursor.CROSSHAIR);
-        // });
 
-        drawingWindow.setOnMouseEntered(e->{
-            drawingWindow.setCursor(Cursor.CROSSHAIR);
-        });
+        selectedFigure = new SelectedToolContext(new RectangleTool(model, drawingWindow), drawingWindow, borderColorPicker, interiorColorPicker);
 
-        drawingWindow.setOnMousePressed(e -> {
-            if(e.getButton() == MouseButton.PRIMARY){
-            startDragX = e.getX();
-            startDragY = e.getY();
-            }
-        });
-
-        /*
-         * 
-         */
-        //event filter because mouse move quickly ad 
-        drawingWindow.addEventFilter(MouseEvent.MOUSE_RELEASED, new EventHandler<MouseEvent>() {
-            @Override
-            public void handle(MouseEvent e) {
-                if(e.getButton() == MouseButton.PRIMARY){
-                double finalDragX = e.getX();
-                double finalDragY = e.getY();
-                selectedFigure.drawShape(model,drawingWindow,borderColorPicker, interiorColorPicker,startDragX, startDragY, finalDragX, finalDragY);
-            }
-        }
-        });
         setInteriorColorPickerVisible();
 
         /*
@@ -238,19 +194,21 @@ public class Controller implements Initializable{
  
     @FXML
     void onEllipseClick(ActionEvent event) {
-        selectedFigure.changeState(new EllipseState());
+        
+        selectedFigure.changeTool(new EllipseTool(model, drawingWindow));
         setInteriorColorPickerVisible();
     }
 
     @FXML
     void onLineClick(ActionEvent event) {
-        selectedFigure.changeState(new SegmentState());
+        selectedFigure.changeTool(new LineTool(model, drawingWindow));
         setInteriorColorPickerVisible();
     }
 
     @FXML
     void onRectangleClick(ActionEvent event) {
-        selectedFigure.changeState(new RectangleState());
+        
+        selectedFigure.changeTool(new RectangleTool(model, drawingWindow));
         setInteriorColorPickerVisible();
     }
 
@@ -280,26 +238,15 @@ public class Controller implements Initializable{
 
     @FXML
     void deleteShape(ActionEvent event){
-        /*
-         * dovrebbe essere preso un elemento selezionato dalla lista SelectedShapes del Model.
-         * Questo permetterà la selezione multipla.
-         */
-        Node border = drawingWindow.lookup("#selected");
-        Node shape = drawingWindow.lookup("#selectedShape");
-
-        if (border != null && shape!= null){
-            /*
-
-             * Cancello nodo dalla lista osservabile. La lista ha un changeListener nel controller che all'atto di una
-             * modifica aggiorna la drawingWindow. 
-             */
-            model.removeShape(shape);       
-        }
+        DeleteCommand deleteCommand =  new DeleteCommand(model, drawingWindow);
+        this.fileInvoker.setCommand(deleteCommand);
+        this.fileInvoker.executeCommand();
     }
 
     @FXML
     void select(ActionEvent event) {
-        selectedFigure.changeState(new SelectState());
+        selectedFigure.changeTool(new SelectTool(model, drawingWindow));
+        setInteriorColorPickerVisible();
     }
 
     @FXML
@@ -310,8 +257,14 @@ public class Controller implements Initializable{
     }
 
     private void setInteriorColorPickerVisible(){
-        interiorColorPicker.visibleProperty().bind(selectedFigure.getSegmentState());
-        chooseInteriorColorLabel.visibleProperty().bind(selectedFigure.getSegmentState());
+        interiorColorPicker.visibleProperty().bind(selectedFigure.isLineTool());
+        chooseInteriorColorLabel.visibleProperty().bind(selectedFigure.isLineTool());
+    }
+
+    private void setCursorCrosschair(){
+        drawingWindow.setOnMouseEntered(e ->{
+            drawingWindow.setCursor(Cursor.CROSSHAIR);
+        });
     }
 }
 

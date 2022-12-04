@@ -64,7 +64,7 @@ public class Model {
      */
 
     public void saveBackup(){
-        this.history.push(shapes);
+        this.history.push(FXCollections.observableArrayList(shapes));
     }
 
     public void backup(){   /* restore a previous context */

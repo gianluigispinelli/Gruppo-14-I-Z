@@ -1,6 +1,4 @@
-package drawingSoftware.Editor;
-
-import drawingSoftware.Load.Save.Command;
+package drawingSoftware;
 
 public class CopyCommand implements Command{
 

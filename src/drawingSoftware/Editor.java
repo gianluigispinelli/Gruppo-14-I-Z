@@ -1,7 +1,7 @@
-package drawingSoftware.Editor;
+package drawingSoftware;
 
 
-import drawingSoftware.Model;
+
 import javafx.event.EventHandler;
 import javafx.scene.Node;
 import javafx.scene.input.MouseEvent;
@@ -32,8 +32,8 @@ public class Editor {
     
     public void copy(){
         /* dopo copy non bisogna salvare uno snapshot perché non cambia nulla */
-        if (drawingWindow.lookup("#selectedShape")!=null){  // se abbiamo selezionato una figura
-            copiedShape = (Shape)drawingWindow.lookup("#selectedShape");  //prendo questa figura
+        if (drawingWindow.lookup("#selected")!=null){  // se abbiamo selezionato una figura
+            copiedShape = (Shape)drawingWindow.lookup("#selected");  //prendo questa figura
         }
     } 
 
@@ -87,14 +87,13 @@ public class Editor {
                         border.getStrokeDashArray().addAll(25d, 10d);
                         
                         // removeOtherBorder();
-                        Node removeBorder = drawingWindow.lookup("#selected");
-                        Node changeId = drawingWindow.lookup("#selectedShape");
+                        // Node removeBorder = drawingWindow.lookup("#selected");
+                        Node changeId = drawingWindow.lookup("#selected");
                         if (changeId!=null)
                         changeId.setId("");
-                        copiedRectangle.setId("selectedShape");
+                        copiedRectangle.setId("selected");
                         
-                        drawingWindow.getChildren().remove(removeBorder);
-                        drawingWindow.getChildren().add(border);  
+                        // drawingWindow.getChildren().remove(removeBorder);
                 }
             });
             model.addShape(copiedRectangle);
@@ -157,13 +156,12 @@ public class Editor {
                         border.getStrokeDashArray().addAll(25d, 10d);
     
                         
-                        Node removeBorder = drawingWindow.lookup("#selected");
-                        Node changeId = drawingWindow.lookup("#selectedShape");
+                        // Node removeBorder = drawingWindow.lookup("#selected");
+                        Node changeId = drawingWindow.lookup("#selected");
                         if (changeId!=null)
                         changeId.setId("");
-                        copiedLine.setId("selectedShape");
-                        drawingWindow.getChildren().remove(removeBorder);
-                        drawingWindow.getChildren().add(border);
+                        copiedLine.setId("selected");
+                        // drawingWindow.getChildren().remove(removeBorder);
                 }
             });
 
@@ -217,13 +215,12 @@ public class Editor {
                         border.getStrokeDashArray().addAll(25d, 10d);
                         
                         // removeOtherBorder();
-                        Node removeBorder = drawingWindow.lookup("#selected");
-                        Node changeId = drawingWindow.lookup("#selectedShape");
+                        // Node removeBorder = drawingWindow.lookup("#selected");
+                        Node changeId = drawingWindow.lookup("#selected");
                         if (changeId!=null)
                         changeId.setId("");
-                        copiedEllipse.setId("selectedShape");
-                        drawingWindow.getChildren().remove(removeBorder);
-                        drawingWindow.getChildren().add(border);  
+                        copiedEllipse.setId("selected");
+                        // drawingWindow.getChildren().remove(removeBorder);
                 }
             });
             model.addShape(copiedEllipse);
@@ -231,8 +228,8 @@ public class Editor {
     }
 
     public void cut(){
-        if (drawingWindow.lookup("#selectedShape")!=null){  // se abbiamo selezionato una figura
-            copiedShape = (Shape)drawingWindow.lookup("#selectedShape");  //prendo questa figura
+        if (drawingWindow.lookup("#selected")!=null){  // se abbiamo selezionato una figura
+            copiedShape = (Shape)drawingWindow.lookup("#selected");  //prendo questa figura
             model.removeShape(copiedShape);
         }
     }

@@ -1,4 +1,4 @@
-package drawingSoftware.Load.Save;
+package drawingSoftware;
 
 public interface Command {
 

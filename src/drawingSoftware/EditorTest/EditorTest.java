@@ -2,7 +2,7 @@ package drawingSoftware.EditorTest;
 
 import org.junit.*;
 
-import drawingSoftware.Editor.Editor;
+import drawingSoftware.Editor;
 import javafx.scene.layout.Pane;
 import javafx.scene.shape.Rectangle;
 
