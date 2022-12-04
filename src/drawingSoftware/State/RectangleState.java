@@ -1,5 +1,6 @@
 package drawingSoftware.State;
 
+import drawingSoftware.Model;
 import javafx.beans.property.SimpleBooleanProperty;
 import javafx.beans.value.ObservableBooleanValue;
 import javafx.event.EventHandler;
@@ -14,7 +15,7 @@ public class RectangleState implements State{
     
 
     @Override
-    public void drawShape(Pane drawableWindow, ColorPicker borderColorPicker, ColorPicker interiorColorPicker,double startDragX, double startDragY, double finalDragX, double finalDragY) {
+    public void drawShape(Model model, Pane drawableWindow, ColorPicker borderColorPicker, ColorPicker interiorColorPicker,double startDragX, double startDragY, double finalDragX, double finalDragY) {
         
         /* CONTROLLI PER NON DISEGNARE LA FIGURA ESTERNA ALL'AREA DI DISEGNO */
         finalDragX = finalDragX < 0.0 ? 0.0 : finalDragX;
@@ -118,7 +119,7 @@ public class RectangleState implements State{
                     drawableWindow.getChildren().add(border);  
             }
         });
-        drawableWindow.getChildren().add(r);      
+        model.addShape(r);
     }
     
     @Override
@@ -126,6 +127,12 @@ public class RectangleState implements State{
         // TODO Auto-generated method stub
         ObservableBooleanValue visible = new SimpleBooleanProperty(true);
         return visible;
+    }
+
+    @Override
+    public void useTool() {
+        // TODO Auto-generated method stub
+        
     }
     
 }

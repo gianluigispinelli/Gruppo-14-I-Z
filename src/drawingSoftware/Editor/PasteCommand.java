@@ -1,21 +1,18 @@
 package drawingSoftware.Editor;
 
 import drawingSoftware.Load.Save.Command;
-import javafx.scene.layout.Pane;
 
 public class PasteCommand implements Command{
 
     Editor editor; 
-    Pane drawableWindow;
 
-    public PasteCommand(Editor editor, Pane drawableWindow){
+    public PasteCommand(Editor editor){
         this.editor = editor;
-        this.drawableWindow = drawableWindow; 
     }
 
     @Override
     public void execute() {
-        editor.paste(drawableWindow);
+        editor.paste();
     }
 }
 

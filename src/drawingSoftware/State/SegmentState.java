@@ -1,5 +1,6 @@
 package drawingSoftware.State;
 
+import drawingSoftware.Model;
 import javafx.beans.property.SimpleBooleanProperty;
 import javafx.beans.value.ObservableBooleanValue;
 import javafx.event.EventHandler;
@@ -13,7 +14,7 @@ import javafx.scene.shape.Rectangle;
 public class SegmentState implements State{
 
     @Override
-    public void drawShape(Pane drawingWindow, ColorPicker borderColorPicker,ColorPicker interiorColorPicker,double startDragX, double startDragY, double finalDragX, double finalDragY) {
+    public void drawShape(Model model, Pane drawingWindow, ColorPicker borderColorPicker,ColorPicker interiorColorPicker,double startDragX, double startDragY, double finalDragX, double finalDragY) {
 
         finalDragX = finalDragX < 0.0 ? 0.0 : finalDragX;
         startDragX = startDragX < 0.0 ? 0.0 : startDragX;
@@ -80,13 +81,17 @@ public class SegmentState implements State{
             }
             
         });
-        
-        drawingWindow.getChildren().addAll(line);
+        model.addShape(line);
     }
     @Override
     public ObservableBooleanValue isNotSegmentState() {
         ObservableBooleanValue visible = new SimpleBooleanProperty(false);
         return visible;
+    }
+    @Override
+    public void useTool() {
+        // TODO Auto-generated method stub
+        
     }
     
 }

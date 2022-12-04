@@ -1,25 +1,19 @@
 package drawingSoftware;
 
 import javafx.scene.paint.Color;
-import javafx.scene.paint.Paint;
-import javafx.scene.shape.Ellipse;
-import javafx.scene.shape.Line;
-import javafx.scene.shape.Rectangle;
-import javafx.scene.shape.Shape;
 import javafx.stage.FileChooser;
 
 import java.io.File;
 import java.net.URL;
 import java.util.ResourceBundle;
 
-import javax.sound.sampled.SourceDataLine;
-import javax.swing.tree.DefaultTreeCellEditor.EditorContainer;
 
 import drawingSoftware.Editor.CopyCommand;
 import drawingSoftware.Editor.CutCommand;
 import drawingSoftware.Editor.Editor;
 import drawingSoftware.Editor.EditorInvoker;
 import drawingSoftware.Editor.PasteCommand;
+import drawingSoftware.Editor.UndoCommand;
 import drawingSoftware.Load.Save.Command;
 import drawingSoftware.Load.Save.FileInvoker;
 import drawingSoftware.Load.Save.LoadCommand;
@@ -30,14 +24,8 @@ import drawingSoftware.State.RectangleState;
 import drawingSoftware.State.SegmentState;
 import drawingSoftware.State.SelectState;
 import drawingSoftware.State.SelectedFigure;
-import javafx.beans.binding.Bindings;
-import javafx.beans.property.BooleanProperty;
-import javafx.beans.property.SimpleBooleanProperty;
-import javafx.beans.value.ChangeListener;
-import javafx.beans.value.ObservableBooleanValue;
-import javafx.beans.value.ObservableValue;
+import javafx.collections.ListChangeListener;
 import javafx.event.ActionEvent;
-import javafx.event.Event;
 import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
@@ -49,12 +37,9 @@ import javafx.scene.control.Label;
 import javafx.scene.control.Menu;
 import javafx.scene.control.MenuItem;
 import javafx.scene.control.ScrollPane;
-import javafx.scene.input.Clipboard;
-import javafx.scene.input.ClipboardContent;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyCodeCombination;
 import javafx.scene.input.KeyCombination;
-import javafx.scene.input.KeyEvent;
 import javafx.scene.input.MouseButton;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.AnchorPane;
@@ -125,7 +110,6 @@ public class Controller implements Initializable{
 
     private double startDragX;
     private double startDragY;
-
     private SelectedFigure selectedFigure; 
 
     /*FILE CHOOSER */
@@ -136,8 +120,9 @@ public class Controller implements Initializable{
     /*
      * Istanza del receiver Editor e dell'EditorInvoker
      */
-    Editor editor = new Editor();
-    EditorInvoker editorInvoker = new EditorInvoker();
+    Editor editor; 
+    EditorInvoker editorInvoker;
+    Model model; 
 
     /*
      * stroke = contorno
@@ -148,6 +133,27 @@ public class Controller implements Initializable{
     @Override
     public void initialize(URL location, ResourceBundle resources) {
 
+        model = new Model();          /* Model dove mi salvo le shapes che aggiungo */
+        /*
+         * Il controller fa da intermediario tra il model delle figure aggiunte e cosa succede nella view
+         */
+        model.shapes.addListener(new ListChangeListener<Node>() {
+
+            @Override
+            public void onChanged(Change<? extends Node> arg0) {        /* se modifichiamo la drawingWindow */
+                drawingWindow.getChildren().clear();
+                drawingWindow.getChildren().addAll(model.shapes);
+            }
+        });
+
+        /*
+
+         * TODO: le figure selezionate dovranno andare in un model e non devono avere un'etichetta
+         */
+
+        editor = new Editor(model, drawingWindow);
+        
+        editorInvoker = new EditorInvoker();
         scrollPane.setContent(drawingWindow);
 
         /* INIZIALIZZAZIONE VARIABILI PER CARICAMENTO FILE */
@@ -175,6 +181,10 @@ public class Controller implements Initializable{
             startDragY = e.getY();
             }
         });
+
+        /*
+         * 
+         */
         //event filter because mouse move quickly ad 
         drawingWindow.addEventFilter(MouseEvent.MOUSE_RELEASED, new EventHandler<MouseEvent>() {
             @Override
@@ -182,14 +192,14 @@ public class Controller implements Initializable{
                 if(e.getButton() == MouseButton.PRIMARY){
                 double finalDragX = e.getX();
                 double finalDragY = e.getY();
-                selectedFigure.drawShape(drawingWindow,borderColorPicker, interiorColorPicker,startDragX, startDragY, finalDragX, finalDragY);
+                selectedFigure.drawShape(model,drawingWindow,borderColorPicker, interiorColorPicker,startDragX, startDragY, finalDragX, finalDragY);
             }
         }
         });
         setInteriorColorPickerVisible();
 
         /*
-         * UNDO FUNCTION
+         * Accelerators
          */
         undoItem.setAccelerator(new KeyCodeCombination(KeyCode.Z, KeyCombination.CONTROL_DOWN));
         copyItem.setAccelerator(new KeyCodeCombination(KeyCode.C, KeyCombination.CONTROL_DOWN));
@@ -201,30 +211,25 @@ public class Controller implements Initializable{
 
     @FXML
     void copyAShape(ActionEvent event) {
-        // CopyCommand copycommand = new CopyCommand(editor, drawingWindow);
-        // editorInvoker.setCommand(copycommand);
-        // editorInvoker.executeCommand();
-        System.out.println("copia");
-        Clipboard cp = Clipboard.getSystemClipboard();
-        ClipboardContent cpCnt = new ClipboardContent();
-        cpCnt.put(null, cpCnt);
-        cp.setContent(cpCnt);
+        CopyCommand copycommand = new CopyCommand(editor);
+        editorInvoker.setCommand(copycommand);
+        editorInvoker.executeCommand();
     }
 
     @FXML
     void cutAShape(ActionEvent event) {
-        // CutCommand cutCommand = new CutCommand(editor, drawingWindow);
-        // editorInvoker.setCommand(cutCommand);
-        // editorInvoker.executeCommand();
-        System.out.println("cut");
+        CutCommand cutCommand = new CutCommand(editor);
+        // careTaker.makeBackup();
+        editorInvoker.setCommand(cutCommand);
+        editorInvoker.executeCommand();
     }
 
     @FXML
     void pasteAShape(ActionEvent event) {
-        // PasteCommand pasteCommand = new PasteCommand(editor, drawingWindow);
-        // editorInvoker.setCommand(pasteCommand);
-        // editorInvoker.executeCommand();
-        System.out.println("paste");
+        PasteCommand pasteCommand = new PasteCommand(editor);
+        // careTaker.makeBackup();
+        editorInvoker.setCommand(pasteCommand);
+        editorInvoker.executeCommand();
     }    
  
     @FXML
@@ -241,7 +246,6 @@ public class Controller implements Initializable{
 
     @FXML
     void onRectangleClick(ActionEvent event) {
-        
         selectedFigure.changeState(new RectangleState());
         setInteriorColorPickerVisible();
     }
@@ -272,12 +276,20 @@ public class Controller implements Initializable{
 
     @FXML
     void deleteShape(ActionEvent event){
+        /*
+         * dovrebbe essere preso un elemento selezionato dalla lista SelectedShapes del Model.
+         * Questo permetterà la selezione multipla.
+         */
         Node border = drawingWindow.lookup("#selected");
         Node shape = drawingWindow.lookup("#selectedShape");
 
         if (border != null && shape!= null){
-            drawingWindow.getChildren().remove(border);
-            drawingWindow.getChildren().remove(shape);
+            /*
+
+             * Cancello nodo dalla lista osservabile. La lista ha un changeListener nel controller che all'atto di una
+             * modifica aggiorna la drawingWindow. 
+             */
+            model.removeShape(shape);       
         }
     }
 
@@ -288,9 +300,9 @@ public class Controller implements Initializable{
 
     @FXML
     void undo(ActionEvent event){
-        int n_elements = drawingWindow.getChildren().size();
-        if (n_elements>0)
-        drawingWindow.getChildren().remove(n_elements-1);
+        Command undoCommand = new UndoCommand(model);
+        editorInvoker.setCommand(undoCommand);
+        editorInvoker.executeCommand();
     }
 
     private void setInteriorColorPickerVisible(){

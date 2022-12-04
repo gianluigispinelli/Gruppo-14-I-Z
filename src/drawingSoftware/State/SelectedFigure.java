@@ -1,6 +1,7 @@
 package drawingSoftware.State;
 import java.util.ArrayList;
 
+import drawingSoftware.Model;
 import javafx.beans.value.ObservableBooleanValue;
 import javafx.scene.Node;
 import javafx.scene.Parent;
@@ -35,7 +36,7 @@ public class SelectedFigure{
         addAllDescendents(root, nodes);
         return nodes;
     }
-    
+
     private static void addAllDescendents(Parent parent, ArrayList<Node> nodes) {
         for (Node node : parent.getChildrenUnmodifiable()) {
             nodes.add(node);
@@ -50,9 +51,9 @@ public class SelectedFigure{
     * @param {startDragX, startDragY} initial coordinates of left-click in the canvas
     * @param {finalDragX, finalDragY} final coordinates of released left-click in the canvas
     */
-    public void drawShape(Pane drawableWindow, ColorPicker borderColorPicker, ColorPicker inteColorPicker, double startDragX, double startDragY, double finalDragX, double finalDragY){
+    public void drawShape(Model model,Pane drawableWindow, ColorPicker borderColorPicker, ColorPicker inteColorPicker, double startDragX, double startDragY, double finalDragX, double finalDragY){
         
-         s.drawShape(drawableWindow, borderColorPicker, inteColorPicker, startDragX, startDragY, finalDragX, finalDragY);
+         s.drawShape(model, drawableWindow, borderColorPicker, inteColorPicker, startDragX, startDragY, finalDragX, finalDragY);
     }
 
     public State getState(){
