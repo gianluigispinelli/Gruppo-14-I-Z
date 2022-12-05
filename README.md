@@ -4,5 +4,11 @@ Repository gruppo 14 I-Z per il progetto del corso Software Engineering a.a. 202
 ## Product Backlog and Sprint Backlog:
 [click here](https://docs.google.com/spreadsheets/d/11ZBcAtNRSjyP-nNcc7zK4zQXnO_cEc4_2x5hiZ_xE7A/edit?usp=sharing)
 
-## Sprint review and retrospective 27/11/22:
+## First Sprint review and retrospective 27/11/22:
 [click here](https://unisalerno-my.sharepoint.com/:w:/g/personal/a_zito32_studenti_unisa_it/ER2sjD77imFJrLFcjiQIkScBHf0pKwj1tfsoeM2kJZMJcw?e=mwXMj3)
+
+## Second Sprint Review 04/12/2022
+[click here](https://unisalerno-my.sharepoint.com/:w:/g/personal/a_zito32_studenti_unisa_it/EU2kKofxunBNqmnFWiPRhkcBIT1nkyCREhdGrsWg7dj9sA?e=v50LbG)
+
+## Second Sprint Retrospective 04/12/2022
+[click here](https://drive.google.com/file/d/1kNOZQ4mua_xytp_Skv_zAIRqB2dWzvoL/view?usp=sharing)
