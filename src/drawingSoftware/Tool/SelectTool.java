@@ -61,7 +61,9 @@ public class SelectTool implements Tool{
                         Shape shape = (Shape) node; 
                         shape.getStrokeDashArray().removeAll(25d,20d,5d,20d);
                         shape.setStrokeWidth(1);
-                        shapeToSelect.setId("");
+                        if (shapeToSelect != null){
+                            shapeToSelect.setId("");
+                        }
                     }
                 }
                 else{
@@ -93,7 +95,6 @@ public class SelectTool implements Tool{
                     this.setEndX(e.getX());
                     this.setEndY(e.getY());
                     FileInvoker invoker = new FileInvoker();
-                    model.saveBackup();
                     MoveCommand moveCommand =  new MoveCommand(model, (Shape)this.shapeToSelect, startX, startY, endX, endY);
                     invoker.setCommand(moveCommand);
                     invoker.executeCommand();
