@@ -29,22 +29,11 @@ public class RectangleTool implements Tool{
         this.drawingWindow = drawingWindow;
     }
 
-
-
     @Override
     public void useSelectedTool(ColorPicker borderColor, ColorPicker fillColor) {
         this.borderColor = borderColor;
         this.fillColor = fillColor;
-        this.captureMouseEvent();
-           
-    }
-
-    private void createRectangle(){
-        this.rectangle = new Rectangle();
-        this.setDim(startDragX, finalDragX, startDragY, finalDragY);
-        this.rectangle.setFill(fillColor.getValue());
-        this.rectangle.setStroke(borderColor.getValue());
-        this.drawRectangle();
+        this.captureMouseEvent(); 
     }
 
     private void captureMouseEvent(){
@@ -70,14 +59,18 @@ public class RectangleTool implements Tool{
         });
     }
 
-
+    private void createRectangle(){
+        this.rectangle = new Rectangle();
+        this.setDim(startDragX, finalDragX, startDragY, finalDragY);
+        this.rectangle.setFill(fillColor.getValue());
+        this.rectangle.setStroke(borderColor.getValue());
+        this.drawRectangle();
+    }
 
     private void drawRectangle(){
         DrawShapeCommand drawCommand = new DrawShapeCommand(model, this.drawingWindow, this.rectangle);
         drawCommand.execute();
     }
-
-
 
     private void setDim(double startDragX, double finalDragX, double startDragY, double finalDragY){
 
@@ -99,8 +92,6 @@ public class RectangleTool implements Tool{
         this.rectangle.setHeight(height);
     }
 
-
-
     private double[] checkDrawStartPoint(double start, double end){
         double startPoint, endPoint;
         if (start < end){
@@ -115,12 +106,9 @@ public class RectangleTool implements Tool{
         return points;
     }
 
-
-
     private double calculateDim(double startPoint, double endPoint){
         return(Math.abs(endPoint - startPoint));
     }
-
 
 
     @Override
@@ -129,25 +117,17 @@ public class RectangleTool implements Tool{
         return visible;
     }
 
-
-
     public void setFinalDragX(double finalDragX) {
         this.finalDragX = finalDragX;
     }
-
-
 
     public void setStartDragX(double startDragX) {
         this.startDragX = startDragX;
     }
 
-
-
     public void setFinalDragY(double finalDragY) {
         this.finalDragY = finalDragY;
     }
-
-
 
     public void setStartDragY(double startDragY) {
         this.startDragY = startDragY;

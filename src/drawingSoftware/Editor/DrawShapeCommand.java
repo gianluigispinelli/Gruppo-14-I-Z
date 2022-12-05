@@ -13,14 +13,12 @@ public class DrawShapeCommand implements Command{
 
     public DrawShapeCommand(Model model, Pane receiverPaneObject, Shape shape) {
         this.model = model; 
-        System.out.println("command\n");
         this.receiverPaneObject = receiverPaneObject;
         this.shape  = shape;
     }
 
     @Override
     public void execute() {
-        System.out.println("eseguo\n");
         model.addShape(shape);
     }
     

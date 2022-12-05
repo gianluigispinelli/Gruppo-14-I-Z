@@ -41,16 +41,6 @@ public class LineTool implements Tool{
         
     }
 
-    private void createLine(){
-        this.line = new Line();
-        this.setDim(startDragX, finalDragX, startDragY, finalDragY);
-        this.line.setFill(fillColor.getValue());
-        this.line.setStroke(borderColor.getValue());
-        this.drawLine();
-    }
-
-
-
     private void captureMouseEvent(){
 
         drawingWindow.setOnMousePressed(e -> {
@@ -73,7 +63,13 @@ public class LineTool implements Tool{
         });
     }
 
-
+    private void createLine(){
+        this.line = new Line();
+        this.setDim(startDragX, finalDragX, startDragY, finalDragY);
+        this.line.setFill(fillColor.getValue());
+        this.line.setStroke(borderColor.getValue());
+        this.drawLine();
+    }
 
     public void setDim(double startDragX, double finalDragX, double startDragY, double finalDragY){
         

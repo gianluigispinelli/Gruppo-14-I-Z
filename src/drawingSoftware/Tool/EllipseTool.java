@@ -4,10 +4,14 @@ import drawingSoftware.Model;
 import drawingSoftware.Editor.DrawShapeCommand;
 import javafx.beans.property.SimpleBooleanProperty;
 import javafx.beans.value.ObservableBooleanValue;
+import javafx.event.EventHandler;
+import javafx.scene.Node;
 import javafx.scene.control.ColorPicker;
 import javafx.scene.input.MouseButton;
+import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.Pane;
 import javafx.scene.shape.Ellipse;
+import javafx.scene.shape.Rectangle;
 
 public class EllipseTool implements Tool{
     private Model model; 
@@ -25,22 +29,11 @@ public class EllipseTool implements Tool{
         this.drawingWindow = drawingWindow;
     }
 
-    
-
     @Override
     public void useSelectedTool(ColorPicker borderColor, ColorPicker fillColor) {
         this.borderColor = borderColor;
         this.fillColor = fillColor;
         this.captureMouseEvent();
-
-    }
-
-    private void createEllipse(){
-        this.ellipse = new Ellipse();
-        this.setDim(startDragX, finalDragX, startDragY, finalDragY);
-        this.ellipse.setFill(fillColor.getValue());
-        this.ellipse.setStroke(borderColor.getValue());
-        this.drawEllipse();
     }
 
     private void captureMouseEvent(){
@@ -55,7 +48,6 @@ public class EllipseTool implements Tool{
         });
         //event filter because mouse move quickly ad 
         drawingWindow.setOnMouseReleased(e ->{
-
                 if(e.getButton() == MouseButton.PRIMARY){
                     this.setFinalDragX(e.getX());
                     this.setFinalDragY(e.getY());
@@ -65,7 +57,13 @@ public class EllipseTool implements Tool{
         });
     }
 
-
+    private void createEllipse(){
+        this.ellipse = new Ellipse();
+        this.setDim(startDragX, finalDragX, startDragY, finalDragY);
+        this.ellipse.setFill(fillColor.getValue());
+        this.ellipse.setStroke(borderColor.getValue());
+        this.drawEllipse();
+    }
     
     public void setDim(double startDragX, double finalDragX, double startDragY, double finalDragY){
         
@@ -87,7 +85,10 @@ public class EllipseTool implements Tool{
         this.ellipse.setRadiusY(height/2.0);
 }
 
+    /*
 
+     * function for calculating coordinates of the shape 
+     */
 
     private double[] checkDrawStartPoint(double start, double end){
         double startPoint, endPoint;
@@ -103,7 +104,10 @@ public class EllipseTool implements Tool{
         return points;
     }
 
+    /*
 
+     * function for calculating width and height
+     */
 
     private double calculateDim(double startPoint, double endPoint){
         return(Math.abs(endPoint - startPoint));
