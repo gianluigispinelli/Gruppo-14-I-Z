@@ -1,24 +1,23 @@
 package drawingSoftware.Tool;
 
+import java.util.ResourceBundle.Control;
 
-import javax.sound.sampled.SourceDataLine;
-
+import drawingSoftware.Controller;
 import drawingSoftware.FileInvoker;
 import drawingSoftware.Model;
 import drawingSoftware.Editor.MoveCommand;
 import javafx.beans.property.SimpleBooleanProperty;
 import javafx.beans.value.ObservableBooleanValue;
 import javafx.collections.ObservableList;
-import javafx.event.EventHandler;
 import javafx.scene.Node;
 import javafx.scene.control.ColorPicker;
 import javafx.scene.input.MouseButton;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.Pane;
-import javafx.scene.paint.Paint;
 import javafx.scene.shape.Shape;
 
 public class SelectTool implements Tool{
+    private Controller controller; 
     private Model model; 
     private Pane drawingWindow;
     private double startX;
@@ -31,7 +30,8 @@ public class SelectTool implements Tool{
 
     private Shape selectedShape; 
  
-    public SelectTool(Model model, Pane drawingWindow) {
+    public SelectTool(Controller controller, Model model, Pane drawingWindow) {
+        this.controller = controller;
         this.model = model; 
         this.drawingWindow = drawingWindow;
         //this.captureMouseEvent();
@@ -94,10 +94,8 @@ public class SelectTool implements Tool{
                     this.released = e;
                     this.setEndX(e.getX());
                     this.setEndY(e.getY());
-                    FileInvoker invoker = new FileInvoker();
                     MoveCommand moveCommand =  new MoveCommand(model, (Shape)this.shapeToSelect, startX, startY, endX, endY);
-                    invoker.setCommand(moveCommand);
-                    invoker.executeCommand();
+                    controller.executeCommand(moveCommand);
                     //e.consume();                
                 }
             }

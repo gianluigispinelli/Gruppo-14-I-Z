@@ -2,14 +2,16 @@ package drawingSoftware.Editor;
 
 import drawingSoftware.Controller;
 import javafx.collections.FXCollections;
-import javafx.collections.ObservableList;
-import javafx.scene.Node;
 
-public abstract class EditorAbstractCommand implements Command{
+public abstract class EditorAbstractCommand extends BackupCommand{
+
+    /*
+     * Coupling: EditorAbstractCommand depends on Controller and Editor. It implements Command.
+     * Coesion: Editor has 2 methods, saveBackup and undo highly related.
+     */
 
     protected Controller controller; 
     protected Editor editor; 
-    protected ObservableList<Node> backup; 
 
     /*
      * Mandatory constructor for all its subclasses
@@ -22,13 +24,17 @@ public abstract class EditorAbstractCommand implements Command{
     /*
      * Every command, before executing its operations, save his own backup
      */
+    @Override
     public void saveBackup(){
-        backup = FXCollections.observableArrayList(editor.getModel().getAllShapes());   /* the backup is how the shapes were before exec. the command */
+        super.backup = FXCollections.observableArrayList(editor.getModel().getAllShapes());   /* the backup is how the shapes were before exec. the command */
     }
 
+    @Override
     public void undo(){
-        editor.getModel().addAll(backup);
+        editor.getModel().addAll(super.backup);
     }
+
+    
 
     @Override
     public boolean execute(){ return false; }

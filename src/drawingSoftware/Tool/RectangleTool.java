@@ -1,6 +1,7 @@
 package drawingSoftware.Tool;
 
 
+import drawingSoftware.Controller;
 import drawingSoftware.Model;
 import drawingSoftware.Editor.DrawShapeCommand;
 import javafx.beans.property.SimpleBooleanProperty;
@@ -11,12 +12,10 @@ import javafx.scene.layout.Pane;
 import javafx.scene.shape.Rectangle;
 
 public class RectangleTool implements Tool{
+    private Controller controller; 
     private Model model; 
-
     private Rectangle rectangle;
-
     private Pane drawingWindow;
-
     private double finalDragX;
     private double startDragX;
     private double finalDragY;
@@ -24,7 +23,8 @@ public class RectangleTool implements Tool{
     private ColorPicker borderColor;
     private ColorPicker fillColor;
 
-    public RectangleTool(Model model, Pane drawingWindow) {
+    public RectangleTool(Controller controller, Model model, Pane drawingWindow) {
+        this.controller = controller;
         this.model = model; 
         this.drawingWindow = drawingWindow;
     }
@@ -68,8 +68,8 @@ public class RectangleTool implements Tool{
     }
 
     private void drawRectangle(){
-        DrawShapeCommand drawCommand = new DrawShapeCommand(model, this.drawingWindow, this.rectangle);
-        drawCommand.execute();
+        DrawShapeCommand drawCommand = new DrawShapeCommand(model, this.rectangle);
+        controller.executeCommand(drawCommand);
     }
 
     private void setDim(double startDragX, double finalDragX, double startDragY, double finalDragY){

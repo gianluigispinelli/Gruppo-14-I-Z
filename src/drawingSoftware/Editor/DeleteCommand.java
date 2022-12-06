@@ -15,8 +15,6 @@ public class DeleteCommand implements Command{
         this.receiverPane = receiverPane;
     }
 
-
-
     @Override
     public boolean execute() {
         

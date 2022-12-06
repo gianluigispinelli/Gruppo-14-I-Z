@@ -1,33 +1,33 @@
 package drawingSoftware.Editor;
 
-import drawingSoftware.Controller;
 import drawingSoftware.Model;
-import javafx.scene.layout.Pane;
+import javafx.collections.FXCollections;
 import javafx.scene.shape.Shape;
 
 
-public class DrawShapeCommand extends EditorAbstractCommand{
-    private Pane receiverPaneObject;
+public class DrawShapeCommand extends BackupCommand{
     private Shape shape;
     private Model model; 
 
-    public DrawShapeCommand(Controller controller, Editor editor) {
-        super(controller, editor);
-    }
-
-    /*  */
-    public DrawShapeCommand(Model model, Pane receiverPaneObject, Shape shape) {
-        super(null, null);
+    public DrawShapeCommand(Model model, Shape shape) {
         this.model = model; 
-        this.receiverPaneObject = receiverPaneObject;
         this.shape = shape; 
     }
 
     @Override
+    public void saveBackup(){
+        super.backup = FXCollections.observableArrayList(model.getAllShapes());   /* the backup is how the shapes were before exec. the command */
+    }
+
+    @Override
+    public void undo(){
+        model.addAll(super.backup);
+    }
+
+    @Override
     public boolean execute() {
-        // saveBackup();
+        saveBackup();
         model.addShape(shape);
         return true; 
     }
-    
 }

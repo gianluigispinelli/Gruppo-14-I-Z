@@ -36,7 +36,7 @@ public class Model {
      * Quando viene aggiunta una nuova shape, viene salvato il contesto prima di effettuare l'operazione
      */
     public void addShape(Node shape){
-        this.history.push(FXCollections.observableArrayList(shapes));   /* passaggio per valore e non riferimento */
+        // this.history.push(FXCollections.observableArrayList(shapes));   /* passaggio per valore e non riferimento */
         shapes.add(shape);
     }
 
@@ -45,7 +45,7 @@ public class Model {
     }
 
     public void removeShape(Node node){
-        this.history.push(FXCollections.observableArrayList(shapes));   /* passaggio per valore e non riferimento */
+        // this.history.push(FXCollections.observableArrayList(shapes));   /* passaggio per valore e non riferimento */
         shapes.remove(node);
     }
 

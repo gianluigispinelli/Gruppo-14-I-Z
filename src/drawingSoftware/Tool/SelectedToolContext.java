@@ -50,14 +50,6 @@ public class SelectedToolContext{
                 addAllDescendents((Parent)node, nodes);
         }
     }
-    /*
-    * @param {borderColorPicker} border color of shape
-    * @param {inteColorPicker} interior color of shape
-    * @param {graphicsContext} graphic context of the canvas
-    * @param {startDragX, startDragY} initial coordinates of left-click in the canvas
-    * @param {finalDragX, finalDragY} final coordinates of released left-click in the canvas
-    */
-
 
     public Tool getSelectedTool(){
         /*

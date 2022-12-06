@@ -1,5 +1,6 @@
 package drawingSoftware.Tool;
 
+import drawingSoftware.Controller;
 import drawingSoftware.Model;
 import drawingSoftware.Editor.DrawShapeCommand;
 import javafx.beans.property.SimpleBooleanProperty;
@@ -14,6 +15,7 @@ import javafx.scene.shape.Ellipse;
 import javafx.scene.shape.Rectangle;
 
 public class EllipseTool implements Tool{
+    private Controller controller; 
     private Model model; 
     private Ellipse ellipse;
     private Pane drawingWindow;
@@ -24,7 +26,8 @@ public class EllipseTool implements Tool{
     private ColorPicker borderColor;
     private ColorPicker fillColor;    
 
-    public EllipseTool(Model model, Pane drawingWindow) {
+    public EllipseTool(Controller controller, Model model, Pane drawingWindow) {
+        this.controller = controller; 
         this.model = model; 
         this.drawingWindow = drawingWindow;
     }
@@ -116,8 +119,8 @@ public class EllipseTool implements Tool{
 
 
     private void drawEllipse(){
-        DrawShapeCommand drawCommand = new DrawShapeCommand(model, this.drawingWindow,this.ellipse);
-        drawCommand.execute();
+        DrawShapeCommand drawCommand = new DrawShapeCommand(model,this.ellipse);
+        controller.executeCommand(drawCommand);
     }
 
 

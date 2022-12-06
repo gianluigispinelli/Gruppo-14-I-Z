@@ -2,20 +2,20 @@ package drawingSoftware;
 
 import java.util.Stack;
 
-import drawingSoftware.Editor.EditorAbstractCommand;
+import drawingSoftware.Editor.BackupCommand;
 
 public class CommandHistory {
-    Stack<EditorAbstractCommand> history;
+    Stack<BackupCommand> history;
 
     public CommandHistory(){
         history = new Stack<>();
     }
 
-    public void push(EditorAbstractCommand c){
+    public void push(BackupCommand c){
         history.push(c);
     }
 
-    public EditorAbstractCommand pop(){
+    public BackupCommand pop(){
         return history.pop();
     }
 }

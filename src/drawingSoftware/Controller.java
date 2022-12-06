@@ -5,8 +5,8 @@ import javafx.stage.FileChooser;
 import java.io.File;
 import java.net.URL;
 import java.util.ResourceBundle;
-import java.util.Stack;
 
+import drawingSoftware.Editor.BackupCommand;
 import drawingSoftware.Editor.Command;
 import drawingSoftware.Editor.CopyCommand;
 import drawingSoftware.Editor.CutCommand;
@@ -23,7 +23,6 @@ import drawingSoftware.Tool.RectangleTool;
 import drawingSoftware.Tool.SelectTool;
 import drawingSoftware.Tool.SelectedToolContext;
 import javafx.collections.ListChangeListener;
-import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
@@ -38,8 +37,6 @@ import javafx.scene.control.ScrollPane;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyCodeCombination;
 import javafx.scene.input.KeyCombination;
-import javafx.scene.input.MouseButton;
-import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.Pane;
@@ -119,7 +116,7 @@ public class Controller implements Initializable{
     Editor editor; 
     CommandHistory commandHistory; 
     Model model; 
-    public EditorAbstractCommand command; 
+    public BackupCommand command; 
 
     @Override
     public void initialize(URL location, ResourceBundle resources) {
@@ -139,7 +136,7 @@ public class Controller implements Initializable{
     }
 
     public void setSelectedFigure(){
-        selectedFigure = new SelectedToolContext(new RectangleTool(model, drawingWindow), drawingWindow, borderColorPicker, interiorColorPicker);
+        selectedFigure = new SelectedToolContext(new RectangleTool(this, model, drawingWindow), drawingWindow, borderColorPicker, interiorColorPicker);
     }
 
     public void setDefaultColor(){
@@ -173,7 +170,7 @@ public class Controller implements Initializable{
     * Creazione delle classi che ereditano da Command 
     */
     public void createEditor(){
-        model = new Model();          /* Model dove mi salvo le shapes che aggiungo */
+        model = new Model();          /* Model dove mi salvo le shapes che aggiungo: rispetto dell'MVC pattern*/
         editor = new Editor(model, drawingWindow);
         /*
     
@@ -184,7 +181,7 @@ public class Controller implements Initializable{
         commandHistory = new CommandHistory();
     }
     
-    public void executeCommand(EditorAbstractCommand command){
+    public void executeCommand(BackupCommand command){
         if (command.execute()){ /* if a command requires a backup via the return value */
             commandHistory.push(command);   /* we insert a backup of the command in the stack */
         }
@@ -224,20 +221,19 @@ public class Controller implements Initializable{
     @FXML
     void onEllipseClick(ActionEvent event) {
         
-        selectedFigure.changeTool(new EllipseTool(model, drawingWindow));
+        selectedFigure.changeTool(new EllipseTool(this, model, drawingWindow));
         setInteriorColorPickerVisible();
     }
 
     @FXML
     void onLineClick(ActionEvent event) {
-        selectedFigure.changeTool(new LineTool(model, drawingWindow));
+        selectedFigure.changeTool(new LineTool(this, model, drawingWindow));
         setInteriorColorPickerVisible();
     }
 
     @FXML
     void onRectangleClick(ActionEvent event) {
-        
-        selectedFigure.changeTool(new RectangleTool(model, drawingWindow));
+        selectedFigure.changeTool(new RectangleTool(this, model, drawingWindow));
         setInteriorColorPickerVisible();
     }
 
@@ -274,7 +270,7 @@ public class Controller implements Initializable{
 
     @FXML
     void select(ActionEvent event) {
-        selectedFigure.changeTool(new SelectTool(model, drawingWindow));
+        selectedFigure.changeTool(new SelectTool(this, model, drawingWindow));
         setInteriorColorPickerVisible();
     }    
 

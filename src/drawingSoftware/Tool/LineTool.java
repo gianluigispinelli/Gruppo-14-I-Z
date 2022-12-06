@@ -1,6 +1,7 @@
 package drawingSoftware.Tool;
 
 
+import drawingSoftware.Controller;
 import drawingSoftware.Model;
 import drawingSoftware.Editor.DrawShapeCommand;
 import javafx.beans.property.SimpleBooleanProperty;
@@ -11,8 +12,8 @@ import javafx.scene.layout.Pane;
 import javafx.scene.shape.Line;
 
 public class LineTool implements Tool{
+    private Controller controller; 
     private Model model; 
-
     private Pane drawingWindow;
 
     private Line line;
@@ -25,7 +26,8 @@ public class LineTool implements Tool{
     private ColorPicker fillColor;    
 
 
-    public LineTool(Model model,Pane drawingWindow) {
+    public LineTool(Controller controller, Model model,Pane drawingWindow) {
+        this.controller = controller; 
         this.model = model; 
         this.drawingWindow = drawingWindow;
 
@@ -92,11 +94,9 @@ public class LineTool implements Tool{
         this.line.setEndY(yEndValue);  
     }
 
-
-
     private void drawLine(){
-        DrawShapeCommand drawCommand = new DrawShapeCommand(model, this.drawingWindow, this.line);
-        drawCommand.execute();
+        DrawShapeCommand drawCommand = new DrawShapeCommand(model,this.line);
+        controller.executeCommand(drawCommand);
     }
 
     @Override
