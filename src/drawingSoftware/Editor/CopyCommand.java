@@ -1,15 +1,16 @@
 package drawingSoftware.Editor;
 
-public class CopyCommand implements Command{
+import drawingSoftware.Controller;
 
-    Editor editor; 
+public class CopyCommand extends EditorAbstractCommand{
 
-    public CopyCommand(Editor editor){
-        this.editor = editor;
+    public CopyCommand(Controller controller, Editor editor) {
+        super(controller, editor);
     }
 
-    @Override
-    public void execute() {
+    public boolean execute(){
+        // app.clipboard ? 
         editor.copy();
+        return false; 
     }
 }

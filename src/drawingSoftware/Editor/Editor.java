@@ -27,8 +27,20 @@ public class Editor {
         this.drawingWindow = drawingWindow;
     }
 
+    public Model getModel(){
+        return this.model;
+    }
+
+    public Pane getDrawingWindow(){
+        return this.drawingWindow;
+    }
+
     public Shape getCopiedShape(){
         return this.copiedShape;
+    }
+
+    public void setCopiedShape(Shape shape){
+        this.copiedShape = shape;
     }
     
     public void copy(){

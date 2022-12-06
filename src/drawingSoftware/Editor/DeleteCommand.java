@@ -18,12 +18,13 @@ public class DeleteCommand implements Command{
 
 
     @Override
-    public void execute() {
+    public boolean execute() {
+        
         Node border = receiverPane.lookup("#selected");
         if (border != null ){
             model.removeShape(border);
         }
-        
+        return true; 
     }
     
 }

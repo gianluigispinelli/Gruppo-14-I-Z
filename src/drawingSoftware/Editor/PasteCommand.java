@@ -1,16 +1,18 @@
 package drawingSoftware.Editor;
 
-public class PasteCommand implements Command{
+import drawingSoftware.Controller;
 
-    Editor editor; 
+public class PasteCommand extends EditorAbstractCommand{
 
-    public PasteCommand(Editor editor){
-        this.editor = editor;
-    }
+    public PasteCommand(Controller controller, Editor editor) {
+        super(controller, editor);
+    }    
 
     @Override
-    public void execute() {
+    public boolean execute() {
+        saveBackup();
         editor.paste();
+        return true; 
     }
 }
 

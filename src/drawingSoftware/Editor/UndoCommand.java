@@ -1,27 +1,18 @@
 package drawingSoftware.Editor;
 
-
-import java.util.Stack;
-
-import drawingSoftware.Model;
-import javafx.collections.ObservableList;
-import javafx.scene.Node;
-
+import drawingSoftware.Controller;
 /*
 
  * The caretaker of the Editor's snapshot 
  */
-public class UndoCommand implements Command{
+public class UndoCommand extends EditorAbstractCommand{
 
-    private Model model; 
-
-
-    public UndoCommand(Model model){
-        this.model = model; 
+    public UndoCommand(Controller controller, Editor editor) {
+        super(controller, editor);
     }
 
-    @Override
-    public void execute() {         /* undo method */
-        this.model.backup();    /* backup to a previuos state of the drawingWindow */
-    }     
+    public boolean execute(){
+        controller.undoOperation();
+        return false; 
+    }
 }

@@ -18,8 +18,9 @@ public class LoadCommand implements Command{
     }
 
     @Override
-    public void execute() {
+    public boolean execute() {
         receiver.loadOperation(fc, drawingWindow);
+        return false; 
     }
 
 }

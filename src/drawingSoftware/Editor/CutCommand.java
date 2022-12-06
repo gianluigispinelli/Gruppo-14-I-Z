@@ -1,15 +1,18 @@
 package drawingSoftware.Editor;
 
-public class CutCommand implements Command{
+import drawingSoftware.Controller;
+import javafx.scene.shape.Shape;
 
-    Editor editor; 
+public class CutCommand extends EditorAbstractCommand{
 
-    public CutCommand(Editor editor){
-        this.editor = editor;
+    public CutCommand(Controller controller, Editor editor) {
+        super(controller, editor);
     }
-
+    
     @Override
-    public void execute() {
+    public boolean execute() {
+        saveBackup();   
         editor.cut();
+        return true; 
     }
 }

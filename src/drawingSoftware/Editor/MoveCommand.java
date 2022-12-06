@@ -21,9 +21,10 @@ public class MoveCommand implements Command{
     }
 
     @Override
-    public void execute() {
+    public boolean execute() {
         this.shapeToMove.setTranslateX(shapeToMove.getTranslateX() + endX - startX);
         this.shapeToMove.setTranslateY(shapeToMove.getTranslateY()+ endY - startY );
+        return true; 
     }
     
 }

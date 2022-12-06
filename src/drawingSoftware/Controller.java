@@ -12,7 +12,7 @@ import drawingSoftware.Editor.CopyCommand;
 import drawingSoftware.Editor.CutCommand;
 import drawingSoftware.Editor.DeleteCommand;
 import drawingSoftware.Editor.Editor;
-import drawingSoftware.Editor.EditorInvoker;
+import drawingSoftware.Editor.EditorAbstractCommand;
 import drawingSoftware.Editor.LoadCommand;
 import drawingSoftware.Editor.PasteCommand;
 import drawingSoftware.Editor.SaveCommand;
@@ -106,9 +106,6 @@ public class Controller implements Initializable{
     @FXML
     private MenuItem undoItem;
 
-    private double startDragX;
-    private double startDragY;
-
     private SelectedToolContext selectedFigure; 
 
     /*FILE CHOOSER */
@@ -120,91 +117,108 @@ public class Controller implements Initializable{
      * Istanza del receiver Editor e dell'EditorInvoker
      */
     Editor editor; 
-    EditorInvoker editorInvoker;
-    Stack<ObservableList<Node>> history;
+    CommandHistory commandHistory; 
     Model model; 
+    public EditorAbstractCommand command; 
 
-    /*
-     * stroke = contorno
-     * fill = contenuto 
-     * task: Function for selecting a geometrical shape in the ribbon amongst the following list: [rectangle, line segment, ellipse]
-     * task: Function for adding the selected shape with fixed size from the ribbon in the drawable window
-     */
     @Override
     public void initialize(URL location, ResourceBundle resources) {
-        
+        createEditor();
+        setScrollPaneContent();
+        addListenerToShapes();
+        setFileChooser();
+        setDefaultColor();    
+        setSelectedFigure();
+        setInteriorColorPickerVisible();
+        setAccelerators();
+    }
+
+    public void setScrollPaneContent(){
         scrollPane.setContent(drawingWindow);
         this.setCursorCrosschair();
+    }
 
-        model = new Model();          /* Model dove mi salvo le shapes che aggiungo */
-        history = new Stack<ObservableList<Node>>();
+    public void setSelectedFigure(){
+        selectedFigure = new SelectedToolContext(new RectangleTool(model, drawingWindow), drawingWindow, borderColorPicker, interiorColorPicker);
+    }
 
-        /*
-         * Il controller fa da intermediario tra il model delle figure aggiunte e cosa succede nella view
-         */
-        model.shapes.addListener(new ListChangeListener<Node>() {
+    public void setDefaultColor(){
+        borderColorPicker.setValue(Color.BLACK);
+        interiorColorPicker.setValue(Color.WHITE);
+    }
 
-            @Override
-            public void onChanged(Change<? extends Node> arg0) {        /* se modifichiamo la drawingWindow */
-                drawingWindow.getChildren().clear();
-                drawingWindow.getChildren().addAll(model.shapes);
-            }
-        });
-
-        /*
-
-         * TODO: le figure selezionate dovranno andare in un model e non devono avere un'etichetta
-         */
-
-        editor = new Editor(model, drawingWindow);
-        
-        editorInvoker = new EditorInvoker();
-        scrollPane.setContent(drawingWindow);
-
+    public void setFileChooser(){
         /* INIZIALIZZAZIONE VARIABILI PER CARICAMENTO FILE */
         // fc.setInitialDirectory(new File("/home/gianluigi/VSC Workspace/JavaProjects/ProgettoSE/Progetto/src/project"));
         filechooser.setInitialDirectory(new File("."));  // apro cartella corrente
         filechooser.getExtensionFilters().add(new FileChooser.ExtensionFilter("images", "*.png")); // filechooser mi mostra solo png
-        
-        borderColorPicker.setValue(Color.BLACK);
-        interiorColorPicker.setValue(Color.WHITE);
-
-        selectedFigure = new SelectedToolContext(new RectangleTool(model, drawingWindow), drawingWindow, borderColorPicker, interiorColorPicker);
-
-        setInteriorColorPickerVisible();
-
+    }
+    
+    public void addListenerToShapes(){
         /*
-         * Accelerators
+         * Il controller fa da intermediario tra il model delle figure aggiunte e cosa succede nella view
          */
-        undoItem.setAccelerator(new KeyCodeCombination(KeyCode.Z, KeyCombination.CONTROL_DOWN));
-        copyItem.setAccelerator(new KeyCodeCombination(KeyCode.C, KeyCombination.CONTROL_DOWN));
-        pasteItem.setAccelerator(new KeyCodeCombination(KeyCode.V, KeyCombination.CONTROL_DOWN));
-        cutItem.setAccelerator(new KeyCodeCombination(KeyCode.X, KeyCombination.CONTROL_DOWN));
-        saveItem.setAccelerator(new KeyCodeCombination(KeyCode.S, KeyCombination.CONTROL_DOWN));
-        loadItem.setAccelerator(new KeyCodeCombination(KeyCode.O, KeyCombination.CONTROL_DOWN));
+        model.getAllShapes().addListener(new ListChangeListener<Node>() {
+
+            @Override
+            public void onChanged(Change<? extends Node> arg0) {        /* se modifichiamo la drawingWindow */
+                drawingWindow.getChildren().clear();
+                drawingWindow.getChildren().addAll(model.getAllShapes());
+            }
+        });
+    }
+
+    /*
+
+    * Creazione delle classi che ereditano da Command 
+    */
+    public void createEditor(){
+        model = new Model();          /* Model dove mi salvo le shapes che aggiungo */
+        editor = new Editor(model, drawingWindow);
+        /*
+    
+         * Lista backup dei comandi. 
+         * principio di single responsibility: ogni comando svolge una determinata funzione
+         * low-coupling: il client (controller) non lavora con i ConcreteCommand ma con l'interfaccia. 
+         */
+        commandHistory = new CommandHistory();
+    }
+    
+    public void executeCommand(EditorAbstractCommand command){
+        if (command.execute()){ /* if a command requires a backup via the return value */
+            commandHistory.push(command);   /* we insert a backup of the command in the stack */
+        }
+    }
+
+    public void undoOperation(){
+        command = commandHistory.pop();
+        if (command!=null){
+            command.undo();
+        }
+    }
+
+    @FXML
+    void undo(ActionEvent event){
+        EditorAbstractCommand undoCommand = new UndoCommand(this, editor);
+        executeCommand(undoCommand);
     }
 
     @FXML
     void copyAShape(ActionEvent event) {
-        CopyCommand copycommand = new CopyCommand(editor);
-        editorInvoker.setCommand(copycommand);
-        editorInvoker.executeCommand();
+        EditorAbstractCommand copyCommand = new CopyCommand(this, editor);
+        executeCommand(copyCommand);
     }
 
     @FXML
     void cutAShape(ActionEvent event) {
-        CutCommand cutCommand = new CutCommand(editor);
-        // careTaker.makeBackup();
-        editorInvoker.setCommand(cutCommand);
-        editorInvoker.executeCommand();
+        EditorAbstractCommand cutCommand = new CutCommand(this, editor);
+        executeCommand(cutCommand);
     }
 
     @FXML
     void pasteAShape(ActionEvent event) {
-        PasteCommand pasteCommand = new PasteCommand(editor);
-        // careTaker.makeBackup();
-        editorInvoker.setCommand(pasteCommand);
-        editorInvoker.executeCommand();
+        EditorAbstractCommand pasteCommand = new PasteCommand(this, editor);
+        executeCommand(pasteCommand);
     }    
  
     @FXML
@@ -262,14 +276,7 @@ public class Controller implements Initializable{
     void select(ActionEvent event) {
         selectedFigure.changeTool(new SelectTool(model, drawingWindow));
         setInteriorColorPickerVisible();
-    }
-
-    @FXML
-    void undo(ActionEvent event){
-        Command undoCommand = new UndoCommand(model);
-        editorInvoker.setCommand(undoCommand);
-        editorInvoker.executeCommand();
-    }
+    }    
 
     private void setInteriorColorPickerVisible(){
         interiorColorPicker.visibleProperty().bind(selectedFigure.isLineTool());
@@ -280,6 +287,15 @@ public class Controller implements Initializable{
         drawingWindow.setOnMouseEntered(e ->{
             drawingWindow.setCursor(Cursor.CROSSHAIR);
         });
+    }
+
+    public void setAccelerators(){
+        undoItem.setAccelerator(new KeyCodeCombination(KeyCode.Z, KeyCombination.CONTROL_DOWN));
+        copyItem.setAccelerator(new KeyCodeCombination(KeyCode.C, KeyCombination.CONTROL_DOWN));
+        pasteItem.setAccelerator(new KeyCodeCombination(KeyCode.V, KeyCombination.CONTROL_DOWN));
+        cutItem.setAccelerator(new KeyCodeCombination(KeyCode.X, KeyCombination.CONTROL_DOWN));
+        saveItem.setAccelerator(new KeyCodeCombination(KeyCode.S, KeyCombination.CONTROL_DOWN));
+        loadItem.setAccelerator(new KeyCodeCombination(KeyCode.O, KeyCombination.CONTROL_DOWN));
     }
 }
 

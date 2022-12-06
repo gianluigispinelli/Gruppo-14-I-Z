@@ -14,8 +14,12 @@ public class Model {
      * In questo modello vanno tutte le figure che inserisco nella drawingWindow 
      */
     
-    ObservableList<Node> shapes; 
-    Stack<List<Node>> history;
+    private ObservableList<Node> shapes; 
+    private Stack<List<Node>> history;
+
+    class Snapshot{
+
+    }
 
 
     public Model(){
@@ -53,10 +57,15 @@ public class Model {
         shapes.removeAll(shapes);
     }
 
+    /*
+     * usata in undo
+     */
     public void addAll(List<Node> list){
         removeAll();   
         shapes.addAll(list);
     }
+
+    
 
     /*
 
