@@ -5,8 +5,7 @@ import javafx.scene.Node;
 
 public class BackupCommand implements Command{
 
-    protected ObservableList<Node> backup; 
-
+    protected ObservableList<Node> backup;
 
     public void saveBackup(){}
 
@@ -14,7 +13,6 @@ public class BackupCommand implements Command{
 
     @Override
     public boolean execute() {
-        // TODO Auto-generated method stub
         return false;
     }
     

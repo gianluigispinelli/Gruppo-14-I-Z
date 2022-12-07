@@ -1,12 +1,9 @@
 package drawingSoftware.Editor;
 
-import drawingSoftware.Controller;
-import javafx.scene.shape.Shape;
-
 public class CutCommand extends EditorAbstractCommand{
 
-    public CutCommand(Controller controller, Editor editor) {
-        super(controller, editor);
+    public CutCommand(Editor editor) {
+        super(editor);
     }
     
     @Override

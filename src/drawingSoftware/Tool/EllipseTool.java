@@ -5,14 +5,10 @@ import drawingSoftware.Model;
 import drawingSoftware.Editor.DrawShapeCommand;
 import javafx.beans.property.SimpleBooleanProperty;
 import javafx.beans.value.ObservableBooleanValue;
-import javafx.event.EventHandler;
-import javafx.scene.Node;
 import javafx.scene.control.ColorPicker;
 import javafx.scene.input.MouseButton;
-import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.Pane;
 import javafx.scene.shape.Ellipse;
-import javafx.scene.shape.Rectangle;
 
 public class EllipseTool implements Tool{
     private Controller controller; 

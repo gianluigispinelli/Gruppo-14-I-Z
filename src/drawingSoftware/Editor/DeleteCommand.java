@@ -1,27 +1,16 @@
 package drawingSoftware.Editor;
 
-import drawingSoftware.Model;
-import javafx.scene.Node;
-import javafx.scene.layout.Pane;
 
-public class DeleteCommand implements Command{
-    private Model model; 
-    private Pane receiverPane;
-    
+public class DeleteCommand extends EditorAbstractCommand{
 
-    
-    public DeleteCommand(Model model, Pane receiverPane) {
-        this.model = model; 
-        this.receiverPane = receiverPane;
+    public DeleteCommand(Editor editor) {
+        super(editor);
+        //TODO Auto-generated constructor stub
     }
 
     @Override
     public boolean execute() {
-        
-        Node border = receiverPane.lookup("#selected");
-        if (border != null ){
-            model.removeShape(border);
-        }
+        editor.delete();
         return true; 
     }
     

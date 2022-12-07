@@ -17,11 +17,6 @@ public class Model {
     private ObservableList<Node> shapes; 
     private Stack<List<Node>> history;
 
-    class Snapshot{
-
-    }
-
-
     public Model(){
         this.shapes = FXCollections.observableArrayList();
         this.history = new Stack<List<Node>>();

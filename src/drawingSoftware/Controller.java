@@ -196,31 +196,37 @@ public class Controller implements Initializable{
 
     @FXML
     void undo(ActionEvent event){
-        EditorAbstractCommand undoCommand = new UndoCommand(this, editor);
+        BackupCommand undoCommand = new UndoCommand(this);
         executeCommand(undoCommand);
     }
 
     @FXML
     void copyAShape(ActionEvent event) {
-        EditorAbstractCommand copyCommand = new CopyCommand(this, editor);
+        EditorAbstractCommand copyCommand = new CopyCommand(editor);
         executeCommand(copyCommand);
     }
 
     @FXML
     void cutAShape(ActionEvent event) {
-        EditorAbstractCommand cutCommand = new CutCommand(this, editor);
+        EditorAbstractCommand cutCommand = new CutCommand(editor);
         executeCommand(cutCommand);
     }
 
     @FXML
     void pasteAShape(ActionEvent event) {
-        EditorAbstractCommand pasteCommand = new PasteCommand(this, editor);
+        EditorAbstractCommand pasteCommand = new PasteCommand(editor);
         executeCommand(pasteCommand);
     }    
+
+    @FXML
+    void deleteShape(ActionEvent event){
+        DeleteCommand deleteCommand =  new DeleteCommand(editor);
+        this.fileInvoker.setCommand(deleteCommand);
+        this.fileInvoker.executeCommand();
+    }
  
     @FXML
     void onEllipseClick(ActionEvent event) {
-        
         selectedFigure.changeTool(new EllipseTool(this, model, drawingWindow));
         setInteriorColorPickerVisible();
     }
@@ -260,13 +266,6 @@ public class Controller implements Initializable{
         this.fileInvoker.setCommand(saveCommand);
         this.fileInvoker.executeCommand();
     } 
-
-    @FXML
-    void deleteShape(ActionEvent event){
-        DeleteCommand deleteCommand =  new DeleteCommand(model, drawingWindow);
-        this.fileInvoker.setCommand(deleteCommand);
-        this.fileInvoker.executeCommand();
-    }
 
     @FXML
     void select(ActionEvent event) {

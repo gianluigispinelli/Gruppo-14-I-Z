@@ -1,11 +1,9 @@
 package drawingSoftware.Editor;
 
-import drawingSoftware.Controller;
-
 public class PasteCommand extends EditorAbstractCommand{
 
-    public PasteCommand(Controller controller, Editor editor) {
-        super(controller, editor);
+    public PasteCommand(Editor editor) {
+        super(editor);
     }    
 
     @Override

@@ -1,31 +1,17 @@
 package drawingSoftware.Editor;
 
 import drawingSoftware.Model;
-import javafx.collections.FXCollections;
 import javafx.scene.shape.Shape;
 
-public class MoveCommand extends BackupCommand{
+public class MoveCommand extends ShapeCommand{
 
-    private Model model; 
-    private Shape shapeToMove;
     private double startX;
     private double startY;
     private double endX;
     private double endY;
 
-    @Override
-    public void saveBackup(){
-        super.backup = FXCollections.observableArrayList(model.getAllShapes());   /* the backup is how the shapes were before exec. the command */
-    }
-
-    @Override
-    public void undo(){
-        model.addAll(super.backup);
-    }
-
     public MoveCommand(Model model, Shape shapeToMove, double startX, double startY, double endX, double endY) {
-        this.model = model; 
-        this.shapeToMove = shapeToMove;
+        super(model, shapeToMove);
         this.startX = startX;
         this.startY = startY;
         this.endX = endX;
@@ -35,11 +21,10 @@ public class MoveCommand extends BackupCommand{
     @Override
     public boolean execute() {
         saveBackup();
-        model.removeShape(shapeToMove);
-        this.shapeToMove.setTranslateX(shapeToMove.getTranslateX() + endX - startX);
-        this.shapeToMove.setTranslateY(shapeToMove.getTranslateY()+ endY - startY );
-        model.addShape(shapeToMove);
+        super.model.removeShape(super.shape);
+        super.shape.setTranslateX(shape.getTranslateX() + endX - startX);
+        this.shape.setTranslateY(shape.getTranslateY()+ endY - startY );
+        model.addShape(shape);
         return true; 
     }
-    
 }

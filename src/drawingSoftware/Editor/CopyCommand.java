@@ -1,11 +1,9 @@
 package drawingSoftware.Editor;
 
-import drawingSoftware.Controller;
-
 public class CopyCommand extends EditorAbstractCommand{
 
-    public CopyCommand(Controller controller, Editor editor) {
-        super(controller, editor);
+    public CopyCommand(Editor editor) {
+        super(editor);
     }
 
     public boolean execute(){

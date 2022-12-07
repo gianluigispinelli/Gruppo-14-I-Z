@@ -5,10 +5,12 @@ import drawingSoftware.Controller;
 
  * The caretaker of the Editor's snapshot 
  */
-public class UndoCommand extends EditorAbstractCommand{
+public class UndoCommand extends BackupCommand{
 
-    public UndoCommand(Controller controller, Editor editor) {
-        super(controller, editor);
+    private Controller controller; 
+
+    public UndoCommand(Controller controller) {
+        this.controller = controller;
     }
 
     public boolean execute(){

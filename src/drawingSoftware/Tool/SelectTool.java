@@ -1,9 +1,7 @@
 package drawingSoftware.Tool;
 
-import java.util.ResourceBundle.Control;
 
 import drawingSoftware.Controller;
-import drawingSoftware.FileInvoker;
 import drawingSoftware.Model;
 import drawingSoftware.Editor.MoveCommand;
 import javafx.beans.property.SimpleBooleanProperty;
