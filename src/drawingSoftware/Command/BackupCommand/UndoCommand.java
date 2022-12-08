@@ -17,4 +17,8 @@ public class UndoCommand extends BackupCommand{
         controller.undoOperation();
         return false; 
     }
+
+    public Controller getController() {
+        return controller;
+    }
 }

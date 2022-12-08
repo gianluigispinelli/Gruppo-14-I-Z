@@ -33,6 +33,9 @@ public abstract class EditorAbstractCommand extends BackupCommand{
     }
 
     @Override
-    public boolean execute(){ return false; }
-    
+    public abstract boolean execute();
+
+    public Editor getEditor(){
+        return this.editor; 
+    }    
 }

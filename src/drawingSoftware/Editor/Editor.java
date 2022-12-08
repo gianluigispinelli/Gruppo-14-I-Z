@@ -1,10 +1,7 @@
 package drawingSoftware.Editor;
 
-
-
 import drawingSoftware.Model;
 import drawingSoftware.Command.BackupCommand.ShapeCommand.DrawShapeCommand;
-import javafx.scene.layout.Pane;
 import javafx.scene.paint.Paint;
 import javafx.scene.shape.Ellipse;
 import javafx.scene.shape.Line;
@@ -16,29 +13,16 @@ import javafx.scene.shape.Shape;
  */
 public class Editor {
 
-    private Pane drawingWindow; 
     private Shape clipboard;
+
     private Model model;        /* the state */
 
-    public Editor(Model model, Pane drawingWindow){
+    public Editor(Model model){
         this.model = model; 
-        this.drawingWindow = drawingWindow;
     }
 
     public Model getModel(){
         return this.model;
-    }
-
-    public Pane getDrawingWindow(){
-        return this.drawingWindow;
-    }
-
-    public Shape getClipboard(){
-        return this.clipboard;
-    }
-
-    public void setClipboard(Shape shape){
-        this.clipboard = shape;
     }
     
     public void copy(){
@@ -135,5 +119,12 @@ public class Editor {
         copiedLine.setStroke(stroke);
         return copiedLine;
     }
-    
+
+    /*
+
+     * getter for clipboard. It's for testing purposes.  
+     */
+    public Shape getClipboard() {
+        return clipboard;
+    }
 }

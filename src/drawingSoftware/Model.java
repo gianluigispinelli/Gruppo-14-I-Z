@@ -22,6 +22,10 @@ public class Model {
         this.shapes = FXCollections.observableArrayList();
     }
 
+    public void setSelectedShape(Node node){
+        this.currentShape.setValue(node);
+    }
+
     public Node getSelectedShape(){
         return this.currentShape.getValue();
     }
@@ -62,5 +66,13 @@ public class Model {
     public void addAll(List<Node> list){
         removeAll();   
         shapes.addAll(list);
+    }
+
+    /*
+
+     * For testing purposes. 
+     */
+    public Node getLastShape(){
+        return shapes.get(shapes.size()-1);
     }
 }

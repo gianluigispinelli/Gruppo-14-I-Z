@@ -2,29 +2,42 @@ package drawingSoftware.Testing.EditorTest;
 
 import org.junit.*;
 
+import drawingSoftware.Model;
 import drawingSoftware.Editor.Editor;
+import javafx.scene.Node;
 import javafx.scene.layout.Pane;
+import javafx.scene.shape.Ellipse;
+import javafx.scene.shape.Line;
 import javafx.scene.shape.Rectangle;
+import javafx.scene.shape.Shape;
 
 import static org.junit.Assert.*;
 
+import java.util.LinkedList;
+import java.util.List;
+
 public class EditorTest {
 
-    Editor e; 
-    Pane drawingWindow; 
-    Rectangle rectangleToBeCopied;      /* Rettangolo del test da copiare */
-    Rectangle rectangleToBePasted;
+    Editor editor; 
+    Shape shapeClipboard; 
 
     @Before
     public void setUp(){
-        drawingWindow = new Pane();
-        rectangleToBeCopied = new Rectangle();
-        rectangleToBeCopied.setId("selectedShape");
-        rectangleToBePasted = new Rectangle();
-        rectangleToBePasted.setX(10.0);       /* rettangolo incollato è di x=10 avanti rispetto alla figura copiata */
-        rectangleToBePasted.setY(10.0);       /* rettangolo incollato è di y=10 avanti rispetto alla figura copiata */
-        drawingWindow.getChildren().add(rectangleToBeCopied);       /* è il rettangolo selezionato nella scena */
-      //  e = new Editor();
+        Model model = new Model();
+        editor = new Editor(model);
+
+        Rectangle rect = new Rectangle(100,100,50,50);
+        Ellipse ell = new Ellipse(100,100,50,50);
+        Line line = new Line(100,100,50,50);
+
+
+        model.addShape(rect); 
+        model.addShape(line);
+        model.addShape(ell);
+
+        model.setCurrentShape(rect);
+        shapeClipboard = rect; 
+
     }
 
     @Test
@@ -34,8 +47,10 @@ public class EditorTest {
          *  BLACKBOX: Il metodo copy soddisfa il requisito nel momento in cui la figura viene copiata all'interno
          *  della variabile copiedShape della classe Editor 
          */
-        e.copy();
-        assertEquals(rectangleToBeCopied, e.getClipboard());      /* verifico che rettangolo è stato copiato */
+
+         /* checking if the copied shape by the editor is the one selected */
+         editor.copy();
+         assertEquals(editor.getModel().getSelectedShape(), editor.getClipboard());
     }
 
     /*
@@ -45,22 +60,37 @@ public class EditorTest {
     @Test
     public void testPaste(){
 
-        e.copy();
         /*
         * Il metodo paste soddisfa le specifiche nel momento in cui 
         * la figura copiata dal metodo è quella che viene aggiunta al Pane drawing window 
         */
-        e.paste();
+        editor.copy();
+        editor.paste();
 
+        /* branch if clipboard istanceof Rectangle */
+        Rectangle copied = (Rectangle)editor.getClipboard();
+        copied.setX(copied.getX()+10);
+        copied.setY(copied.getY()+10);
+        copied.setWidth(copied.getWidth());
+        copied.setHeight(copied.getHeight());
+        copied.setStroke(copied.getStroke());
+        copied.setFill(copied.getFill());
 
-        int pastedShapeIndex = drawingWindow.getChildren().size()-1;
-        assertEquals(rectangleToBePasted, drawingWindow.getChildren().get(pastedShapeIndex));
+        assertEquals(copied, editor.getModel().getLastShape());
+
+        /*
+         * 
+         * Fare gli altri casi
+         * 
+         * 
+         */
+
     }
 
     @Test
     public void testCut(){
-        e.cut();
-        assertEquals(rectangleToBeCopied, e.getClipboard());      /* verifico che rettangolo è stato copiato */
+        editor.cut();
+        assertEquals(shapeClipboard, editor.getClipboard()); /* check if the cutted shape is in the clipboard */
     }
 
 }

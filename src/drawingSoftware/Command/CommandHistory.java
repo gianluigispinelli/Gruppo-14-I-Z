@@ -7,6 +7,8 @@ import drawingSoftware.Command.BackupCommand.BackupCommand;
 public class CommandHistory {
     Stack<BackupCommand> history;
 
+    
+
     public CommandHistory(){
         history = new Stack<>();
     }

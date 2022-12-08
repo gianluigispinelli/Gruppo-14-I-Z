@@ -120,15 +120,43 @@ public class Controller implements Initializable{
     /*
      * Istanza del receiver Editor e dell'EditorInvoker
      */
-    Editor editor; 
-    CommandHistory commandHistory; 
-    Model model; 
-    private BackupCommand command; 
+    private Editor editor; 
+    CommandHistory commandHistory;
+    private Model model; 
+    private BackupCommand command;
     private MyBoundingBox boundingBox;
 
 
+    public Editor getEditor() {
+        return editor;
+    }
+
+    public void setCommandHistory(CommandHistory commandHistory) {
+        this.commandHistory = commandHistory;
+    }
+
+    public void setEditor(Editor editor) {
+        this.editor = editor;
+    }
+
+    public void setModel(Model model) {
+        this.model = model;
+    }
+
     public MyBoundingBox getBoundingBox() {
         return boundingBox;
+    }
+
+    public BackupCommand getCommand() {
+        return command;
+    }
+
+    public Model getModel() {
+        return model;
+    }
+
+    public CommandHistory getCommandHistory() {
+        return commandHistory;
     }
 
     @Override
@@ -213,7 +241,7 @@ public class Controller implements Initializable{
     */
     public void createEditor(){
         model = new Model();          /* Model dove mi salvo le shapes che aggiungo: rispetto dell'MVC pattern*/
-        editor = new Editor(model, drawingWindow);
+        editor = new Editor(model);
         /*
         
          * Lista backup dei comandi. 
