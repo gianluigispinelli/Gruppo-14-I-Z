@@ -1,6 +1,6 @@
-package drawingSoftware;
+package drawingSoftware.Command.LoadAndSaveCommand;
 
-import drawingSoftware.Editor.Command;
+import drawingSoftware.Command.Command;
 
 public class FileInvoker {
     

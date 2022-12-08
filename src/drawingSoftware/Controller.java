@@ -6,26 +6,33 @@ import java.io.File;
 import java.net.URL;
 import java.util.ResourceBundle;
 
-import drawingSoftware.Editor.BackupCommand;
-import drawingSoftware.Editor.Command;
-import drawingSoftware.Editor.CopyCommand;
-import drawingSoftware.Editor.CutCommand;
-import drawingSoftware.Editor.DeleteCommand;
+import drawingSoftware.Command.Command;
+import drawingSoftware.Command.CommandHistory;
+import drawingSoftware.Command.BackupCommand.BackupCommand;
+import drawingSoftware.Command.BackupCommand.UndoCommand;
+import drawingSoftware.Command.BackupCommand.EditorCommand.CopyCommand;
+import drawingSoftware.Command.BackupCommand.EditorCommand.CutCommand;
+import drawingSoftware.Command.BackupCommand.EditorCommand.DeleteCommand;
+import drawingSoftware.Command.BackupCommand.EditorCommand.EditorAbstractCommand;
+import drawingSoftware.Command.BackupCommand.EditorCommand.PasteCommand;
+import drawingSoftware.Command.LoadAndSaveCommand.FileInvoker;
+import drawingSoftware.Command.LoadAndSaveCommand.LoadCommand;
+import drawingSoftware.Command.LoadAndSaveCommand.Receiver;
+import drawingSoftware.Command.LoadAndSaveCommand.SaveCommand;
 import drawingSoftware.Editor.Editor;
-import drawingSoftware.Editor.EditorAbstractCommand;
-import drawingSoftware.Editor.LoadCommand;
-import drawingSoftware.Editor.PasteCommand;
-import drawingSoftware.Editor.SaveCommand;
-import drawingSoftware.Editor.UndoCommand;
+import drawingSoftware.Shapes.MyBoundingBox;
 import drawingSoftware.Tool.EllipseTool;
 import drawingSoftware.Tool.LineTool;
 import drawingSoftware.Tool.RectangleTool;
 import drawingSoftware.Tool.SelectTool;
 import drawingSoftware.Tool.SelectedToolContext;
+import javafx.beans.value.ChangeListener;
+import javafx.beans.value.ObservableValue;
 import javafx.collections.ListChangeListener;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
+import javafx.geometry.Bounds;
 import javafx.scene.Cursor;
 import javafx.scene.Node;
 import javafx.scene.control.Button;
@@ -116,18 +123,47 @@ public class Controller implements Initializable{
     Editor editor; 
     CommandHistory commandHistory; 
     Model model; 
-    public BackupCommand command; 
+    private BackupCommand command; 
+    private MyBoundingBox boundingBox;
+
+
+    public MyBoundingBox getBoundingBox() {
+        return boundingBox;
+    }
 
     @Override
     public void initialize(URL location, ResourceBundle resources) {
         createEditor();
         setScrollPaneContent();
         addListenerToShapes();
+        addListenerToSelectedShape();
         setFileChooser();
         setDefaultColor();    
         setSelectedFigure();
         setInteriorColorPickerVisible();
         setAccelerators();
+    }
+
+    public void addListenerToSelectedShape(){
+        model.getSelectedProperty().addListener(new ChangeListener<Node>() {
+            /*
+
+            * Qui va il codice per mettergli il contorno per la selezione 
+            */
+            @Override
+            public void changed(ObservableValue<? extends Node> arg0, Node oldShapeSelected, Node newShapeSelected) {
+                if (boundingBox != null){       /* rimuovo vecchio bounding box */
+                    drawingWindow.getChildren().remove(boundingBox);
+                }
+                if (newShapeSelected != null){                        
+                        Bounds bounds = newShapeSelected.getBoundsInLocal(); /* bounds della figura selezionata */
+                        boundingBox = new MyBoundingBox(
+                            bounds.getMinX(), bounds.getMinY(), bounds.getWidth(), bounds.getHeight()
+                            );
+                        drawingWindow.getChildren().add(boundingBox);
+                }
+            }
+        });
     }
 
     public void setScrollPaneContent(){
@@ -158,9 +194,15 @@ public class Controller implements Initializable{
         model.getAllShapes().addListener(new ListChangeListener<Node>() {
 
             @Override
-            public void onChanged(Change<? extends Node> arg0) {        /* se modifichiamo la drawingWindow */
-                drawingWindow.getChildren().clear();
-                drawingWindow.getChildren().addAll(model.getAllShapes());
+            public void onChanged(Change<? extends Node> change) {        /* se modifichiamo la drawingWindow */
+                while(change.next()){
+                    for (Node node : change.getRemoved()) { /* per i nodi che rimuovo dalla lista del model */
+                        drawingWindow.getChildren().remove(node);   /* rimuovo il nodo dai figli della drawingWindow */
+                    }
+                    for (Node node : change.getAddedSubList()){ /* per i nodi che aggiungo alla lista del model */
+                        drawingWindow.getChildren().add(node);  /* aggiungo il nodo ai figli della drawingWindow */
+                    }
+                }
             }
         });
     }
@@ -173,7 +215,7 @@ public class Controller implements Initializable{
         model = new Model();          /* Model dove mi salvo le shapes che aggiungo: rispetto dell'MVC pattern*/
         editor = new Editor(model, drawingWindow);
         /*
-    
+        
          * Lista backup dei comandi. 
          * principio di single responsibility: ogni comando svolge una determinata funzione
          * low-coupling: il client (controller) non lavora con i ConcreteCommand ma con l'interfaccia. 
@@ -188,8 +230,9 @@ public class Controller implements Initializable{
     }
 
     public void undoOperation(){
-        command = commandHistory.pop();
-        if (command!=null){
+        if (!commandHistory.isEmpty()){
+            command = commandHistory.pop();
+            model.setCurrentShape(null); /* when i undo an operation I don't care what figure I have selected */
             command.undo();
         }
     }
@@ -221,8 +264,7 @@ public class Controller implements Initializable{
     @FXML
     void deleteShape(ActionEvent event){
         DeleteCommand deleteCommand =  new DeleteCommand(editor);
-        this.fileInvoker.setCommand(deleteCommand);
-        this.fileInvoker.executeCommand();
+        executeCommand(deleteCommand);
     }
  
     @FXML

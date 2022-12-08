@@ -1,4 +1,4 @@
-package drawingSoftware.EditorTest;
+package drawingSoftware.Testing.EditorTest;
 
 import org.junit.*;
 
@@ -35,7 +35,7 @@ public class EditorTest {
          *  della variabile copiedShape della classe Editor 
          */
         e.copy();
-        assertEquals(rectangleToBeCopied, e.getCopiedShape());      /* verifico che rettangolo è stato copiato */
+        assertEquals(rectangleToBeCopied, e.getClipboard());      /* verifico che rettangolo è stato copiato */
     }
 
     /*
@@ -60,7 +60,7 @@ public class EditorTest {
     @Test
     public void testCut(){
         e.cut();
-        assertEquals(rectangleToBeCopied, e.getCopiedShape());      /* verifico che rettangolo è stato copiato */
+        assertEquals(rectangleToBeCopied, e.getClipboard());      /* verifico che rettangolo è stato copiato */
     }
 
 }

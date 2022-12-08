@@ -3,9 +3,7 @@ package drawingSoftware.Editor;
 
 
 import drawingSoftware.Model;
-import javafx.event.EventHandler;
-import javafx.scene.Node;
-import javafx.scene.input.MouseEvent;
+import drawingSoftware.Command.BackupCommand.ShapeCommand.DrawShapeCommand;
 import javafx.scene.layout.Pane;
 import javafx.scene.paint.Paint;
 import javafx.scene.shape.Ellipse;
@@ -19,7 +17,7 @@ import javafx.scene.shape.Shape;
 public class Editor {
 
     private Pane drawingWindow; 
-    private Shape copiedShape;
+    private Shape clipboard;
     private Model model;        /* the state */
 
     public Editor(Model model, Pane drawingWindow){
@@ -35,53 +33,57 @@ public class Editor {
         return this.drawingWindow;
     }
 
-    public Shape getCopiedShape(){
-        return this.copiedShape;
+    public Shape getClipboard(){
+        return this.clipboard;
     }
 
-    public void setCopiedShape(Shape shape){
-        this.copiedShape = shape;
+    public void setClipboard(Shape shape){
+        this.clipboard = shape;
     }
     
     public void copy(){
-        /* dopo copy non bisogna salvare uno snapshot perché non cambia nulla */
-        if (drawingWindow.lookup("#selected")!=null){  // se abbiamo selezionato una figura
-            copiedShape = (Shape)drawingWindow.lookup("#selected");  //prendo questa figura
-        }
+            clipboard = (Shape)model.getSelectedShape();
     } 
 
     public void paste(){
         DrawShapeCommand drawShapeCommand; 
-        if (copiedShape instanceof Rectangle){    // se è un rettangolo
-            Rectangle duplicatedRectangle = dupliRectangle((Rectangle)copiedShape);
+        if (clipboard instanceof Rectangle){    /* if it's a rectangle */
+            Rectangle duplicatedRectangle = dupliRectangle((Rectangle)clipboard);
             drawShapeCommand = new DrawShapeCommand(model,duplicatedRectangle);
         }
-        else if (copiedShape instanceof Line){
-            Line duplicatedLine = dupliLine((Line)copiedShape);
+        else if (clipboard instanceof Line){
+            Line duplicatedLine = dupliLine((Line)clipboard);
             drawShapeCommand = new DrawShapeCommand(model, duplicatedLine);
         }
         else{
-            Ellipse duplicatedEllipse = dupliEllipse((Ellipse)copiedShape);
+            Ellipse duplicatedEllipse = dupliEllipse((Ellipse)clipboard);
             drawShapeCommand = new DrawShapeCommand(model,duplicatedEllipse);
-            
         }
         drawShapeCommand.execute();
     }
 
     public void cut(){
-        if (drawingWindow.lookup("#selected")!=null){  // se abbiamo selezionato una figura
-            copiedShape = (Shape)drawingWindow.lookup("#selected");  //prendo questa figura
-            model.removeShape(copiedShape);
-        }
+        clipboard = (Shape)model.getSelectedShape();
+        model.removeShape(clipboard);
+        model.setCurrentShape(null);
     }
 
     public void delete(){
-        Node border = drawingWindow.lookup("#selected");
-        if (border != null ){
-            model.removeShape(border);
-        }
+            model.removeShape(model.getSelectedShape());
+            model.setCurrentShape(null);
     }
 
+
+
+
+
+
+
+
+    /*
+
+     * methods for pasting
+     */
     public Rectangle dupliRectangle(Rectangle rectangle){
         Double x = rectangle.getX();
         Double y = rectangle.getY();

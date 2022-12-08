@@ -1,6 +1,6 @@
-package drawingSoftware.Editor;
+package drawingSoftware.Command.LoadAndSaveCommand;
 
-import drawingSoftware.Receiver;
+import drawingSoftware.Command.Command;
 import javafx.scene.layout.Pane;
 import javafx.stage.FileChooser;
 

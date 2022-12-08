@@ -1,12 +1,13 @@
-package drawingSoftware.Editor;
+package drawingSoftware.Command.BackupCommand.EditorCommand;
 
+import drawingSoftware.Command.BackupCommand.BackupCommand;
+import drawingSoftware.Editor.Editor;
 import javafx.collections.FXCollections;
 
 public abstract class EditorAbstractCommand extends BackupCommand{
 
     /*
-     * Coupling: EditorAbstractCommand depends on Controller and Editor. It implements Command.
-     * Coesion: Editor has 2 methods, saveBackup and undo highly related.
+     * Coupling: EditorAbstractCommand depends on Editor. It implements Command.
      */
 
     protected Editor editor; 
@@ -30,8 +31,6 @@ public abstract class EditorAbstractCommand extends BackupCommand{
     public void undo(){
         editor.getModel().addAll(super.backup);
     }
-
-    
 
     @Override
     public boolean execute(){ return false; }

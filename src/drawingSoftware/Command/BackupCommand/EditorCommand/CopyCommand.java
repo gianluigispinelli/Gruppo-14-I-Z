@@ -1,4 +1,6 @@
-package drawingSoftware.Editor;
+package drawingSoftware.Command.BackupCommand.EditorCommand;
+
+import drawingSoftware.Editor.Editor;
 
 public class CopyCommand extends EditorAbstractCommand{
 
@@ -7,7 +9,6 @@ public class CopyCommand extends EditorAbstractCommand{
     }
 
     public boolean execute(){
-        // app.clipboard ? 
         editor.copy();
         return false; 
     }

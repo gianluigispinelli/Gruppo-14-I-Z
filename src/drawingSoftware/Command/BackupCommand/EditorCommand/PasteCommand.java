@@ -1,4 +1,6 @@
-package drawingSoftware.Editor;
+package drawingSoftware.Command.BackupCommand.EditorCommand;
+
+import drawingSoftware.Editor.Editor;
 
 public class PasteCommand extends EditorAbstractCommand{
 

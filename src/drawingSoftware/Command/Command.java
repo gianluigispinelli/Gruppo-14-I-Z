@@ -1,4 +1,4 @@
-package drawingSoftware.Editor;
+package drawingSoftware.Command;
 
 public interface Command {    
     public boolean execute();

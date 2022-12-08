@@ -1,4 +1,4 @@
-package drawingSoftware.Editor;
+package drawingSoftware.Command.BackupCommand;
 
 import drawingSoftware.Controller;
 /*

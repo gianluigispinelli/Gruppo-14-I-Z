@@ -1,4 +1,4 @@
-package drawingSoftware.Editor;
+package drawingSoftware.Command.BackupCommand.ShapeCommand;
 
 import drawingSoftware.Model;
 import javafx.scene.shape.Shape;
@@ -21,10 +21,8 @@ public class MoveCommand extends ShapeCommand{
     @Override
     public boolean execute() {
         saveBackup();
-        super.model.removeShape(super.shape);
         super.shape.setTranslateX(shape.getTranslateX() + endX - startX);
-        this.shape.setTranslateY(shape.getTranslateY()+ endY - startY );
-        model.addShape(shape);
+        this.shape.setTranslateY(shape.getTranslateY() + endY - startY );
         return true; 
     }
 }

@@ -3,7 +3,8 @@ package drawingSoftware.Tool;
 
 import drawingSoftware.Controller;
 import drawingSoftware.Model;
-import drawingSoftware.Editor.MoveCommand;
+import drawingSoftware.Command.BackupCommand.ShapeCommand.MoveCommand;
+import drawingSoftware.Shapes.MyBoundingBox;
 import javafx.beans.property.SimpleBooleanProperty;
 import javafx.beans.value.ObservableBooleanValue;
 import javafx.collections.ObservableList;
@@ -23,10 +24,8 @@ public class SelectTool implements Tool{
     private double endX;
     private double endY;
     private Node shapeToSelect;
-    private MouseEvent pressed;
     private MouseEvent released;
-
-    private Shape selectedShape; 
+    private MouseEvent pressed;
  
     public SelectTool(Controller controller, Model model, Pane drawingWindow) {
         this.controller = controller;
@@ -43,61 +42,33 @@ public class SelectTool implements Tool{
 
     @Override
     public void useSelectedTool(ColorPicker borderColor, ColorPicker fillColor) {
-        Node selectedShape = drawingWindow.lookup("#selected");
-
-        if(selectedShape != null){
-            selectedShape.setId("");
-        }
 
         drawingWindow.setOnMousePressed(e ->{
-        
-            if(e.getButton() == MouseButton.PRIMARY){
 
-                if (e.getTarget() instanceof Pane){
-                    ObservableList<Node> all = drawingWindow.getChildren();
-                    for (Node node : all) {
-                        Shape shape = (Shape) node; 
-                        shape.getStrokeDashArray().removeAll(25d,20d,5d,20d);
-                        shape.setStrokeWidth(1);
-                        if (shapeToSelect != null){
-                            shapeToSelect.setId("");
-                        }
-                    }
+            if(e.getButton() == MouseButton.PRIMARY){
+                if (e.getTarget() instanceof Pane){     /* se tocco la drawingWindow */
+                    model.setCurrentShape(null);
                 }
-                else{
-                    if (this.shapeToSelect != null){
-                        Shape modify = (Shape)this.shapeToSelect; 
-                        modify.setId("");
-                        this.selectedShape.setStrokeWidth(1);
-                        this.selectedShape.getStrokeDashArray().removeAll(25d,20d,5d,20d);
-                    }
-                    this.pressed = e;
-                    this.setStartX(e.getX());
-                    this.setStartY(e.getY());
-                    this.shapeToSelect = (Shape)pressed.getTarget();
-                    shapeToSelect.setId("selected");
-                    this.selectedShape = (Shape)shapeToSelect;
-                    this.selectedShape.getStrokeDashArray().addAll(25d,20d,5d,20d);
-                    this.selectedShape.setStrokeWidth(5);
-                    this.selectedShape.toFront();                
+                else{       /* non devo selezionare oggetti di tipo MyBoundingBox */
+                    if (!(e.getTarget() instanceof MyBoundingBox))  /* se non sto toccando una bounding box */
+                        model.setCurrentShape((Node)e.getTarget());  /* setto la figura come corrente nel Model */
                 }
             }
-        //e.consume();
         });
     
         drawingWindow.setOnMouseReleased(e ->{
-
-            if (!(e.getTarget() instanceof Pane)){
-                if(e.getButton() == MouseButton.PRIMARY){
-                    this.released = e;
-                    this.setEndX(e.getX());
-                    this.setEndY(e.getY());
-                    MoveCommand moveCommand =  new MoveCommand(model, (Shape)this.shapeToSelect, startX, startY, endX, endY);
-                    controller.executeCommand(moveCommand);
-                    //e.consume();                
-                }
-            }
-            
+        
+            // if (!(e.getTarget() instanceof Pane)){
+            //     if(e.getButton() == MouseButton.PRIMARY){
+            //         this.released = e;
+            //         this.setEndX(e.getX());
+            //         this.setEndY(e.getY());
+            //         MoveCommand moveCommand =  new MoveCommand(model, (Shape)model.getSelectedShape(), startX, startY, endX, endY);
+            //         MoveCommand moveCommand2 =  new MoveCommand(model, controller.getBoundingBox(), startX, startY, endX, endY);
+            //         controller.executeCommand(moveCommand);
+            //         controller.executeCommand(moveCommand2);
+            //     }
+            // }
         });
     }
 

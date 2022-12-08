@@ -1,8 +1,8 @@
-package drawingSoftware;
+package drawingSoftware.Command;
 
 import java.util.Stack;
 
-import drawingSoftware.Editor.BackupCommand;
+import drawingSoftware.Command.BackupCommand.BackupCommand;
 
 public class CommandHistory {
     Stack<BackupCommand> history;
@@ -17,5 +17,9 @@ public class CommandHistory {
 
     public BackupCommand pop(){
         return history.pop();
+    }
+
+    public boolean isEmpty(){
+        return history.isEmpty();
     }
 }

@@ -1,4 +1,4 @@
-package drawingSoftware;
+package drawingSoftware.Command.LoadAndSaveCommand;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -30,7 +30,6 @@ public class Receiver {
         e1.printStackTrace();
         }
     }
-
  
     public void save(Pane screen){
         Stage stage =  new Stage();
