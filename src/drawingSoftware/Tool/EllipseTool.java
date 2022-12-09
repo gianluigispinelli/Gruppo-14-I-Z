@@ -6,6 +6,7 @@ import drawingSoftware.Command.BackupCommand.ShapeCommand.DrawShapeCommand;
 import javafx.beans.property.SimpleBooleanProperty;
 import javafx.beans.value.ObservableBooleanValue;
 import javafx.scene.control.ColorPicker;
+import javafx.scene.control.TextField;
 import javafx.scene.input.MouseButton;
 import javafx.scene.layout.Pane;
 import javafx.scene.shape.Ellipse;
@@ -65,17 +66,36 @@ public class EllipseTool implements Tool{
     }
     
     public void setDim(double startDragX, double finalDragX, double startDragY, double finalDragY){
+        finalDragX = finalDragX < 0.0 ? 0.0 : finalDragX;
+        startDragX = startDragX < 0.0 ? 0.0 : startDragX;
+        finalDragY = finalDragY < 0.0 ? 0.0 : finalDragY;
+        startDragY = startDragY < 0.0 ? 0.0 : startDragY;
+               
+
+        if(finalDragX > drawingWindow.getMaxWidth()){
+            finalDragX = drawingWindow.getMaxWidth();
+            drawingWindow.setPrefWidth(finalDragX);
+
+        }else if(finalDragX > drawingWindow.getPrefWidth() && !(finalDragX > drawingWindow.getMaxWidth())){
+            drawingWindow.setPrefWidth(finalDragX);
+        }
+
+        if(finalDragY > drawingWindow.getMaxHeight()){
+            finalDragY = drawingWindow.getMaxHeight();
+            drawingWindow.setPrefHeight(finalDragY);
         
+        }else if(finalDragY > drawingWindow.getPrefHeight() && !(finalDragY > drawingWindow.getMaxHeight())){
+            drawingWindow.setPrefHeight(finalDragY);
+        }
+        
+
         double PointsX[] = this.checkDrawStartPoint(startDragX, finalDragX);
         double PointsY[] = this.checkDrawStartPoint(startDragY, finalDragY);
         
         double width = this.calculateDim(startDragX, finalDragX);
         double height = this.calculateDim(startDragY, finalDragY);
 
-        finalDragX = finalDragX < 0.0 ? 0.0 : finalDragX;
-        startDragX = startDragX < 0.0 ? 0.0 : startDragX;
-        finalDragY = finalDragY < 0.0 ? 0.0 : finalDragY;
-        startDragY = startDragY < 0.0 ? 0.0 : startDragY;
+        
 
         this.ellipse.setCenterX(PointsX[0] + Math.abs(finalDragX - startDragX)/2);
         this.ellipse.setCenterY(PointsY[0] +  Math.abs(finalDragY - startDragY)/2);

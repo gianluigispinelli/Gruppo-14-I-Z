@@ -6,6 +6,7 @@ import javafx.beans.value.ObservableBooleanValue;
 import javafx.scene.Node;
 import javafx.scene.Parent;
 import javafx.scene.control.ColorPicker;
+import javafx.scene.control.TextField;
 import javafx.scene.layout.Pane;
 
 
@@ -20,6 +21,8 @@ public class SelectedToolContext{
     private Tool currentTool;
     private ColorPicker borderColorPicker;
     private ColorPicker fillColorPicker;
+    private TextField widthTextField;
+    private TextField heightTextField;
 
     
     public SelectedToolContext(Tool currentTool, Pane drawingWindow, ColorPicker borderColorPicker, ColorPicker fillColorPicker){

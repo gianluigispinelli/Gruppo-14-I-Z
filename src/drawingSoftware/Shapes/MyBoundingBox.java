@@ -10,7 +10,9 @@ public class MyBoundingBox extends Rectangle{
         this.setY(y);
         this.setWidth(width);
         this.setHeight(height);
-        this.setStroke(Color.AQUA);
+        this.setStroke(Color.rgb(0, 128, 255));
+        this.setStrokeWidth(5);
+        this.getStrokeDashArray().addAll(3.0, 7.0, 3.0, 7.0);
         this.setFill(Color.TRANSPARENT);
     };
 }

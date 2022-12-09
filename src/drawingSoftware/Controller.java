@@ -1,8 +1,13 @@
 package drawingSoftware;
 
 import javafx.scene.paint.Color;
+import javafx.scene.shape.Ellipse;
+import javafx.scene.shape.Line;
+import javafx.scene.shape.Rectangle;
+import javafx.scene.shape.Shape;
 import javafx.stage.FileChooser;
 import java.io.File;
+import java.lang.reflect.Array;
 import java.net.URL;
 import java.util.ResourceBundle;
 
@@ -19,6 +24,11 @@ import drawingSoftware.Command.LoadAndSaveCommand.FileInvoker;
 import drawingSoftware.Command.LoadAndSaveCommand.LoadCommand;
 import drawingSoftware.Command.LoadAndSaveCommand.Receiver;
 import drawingSoftware.Command.LoadAndSaveCommand.SaveCommand;
+import javax.swing.plaf.synth.SynthSpinnerUI;
+import javax.swing.text.Position;
+
+import javafx.beans.value.ChangeListener;
+import javafx.beans.value.ObservableValue;
 import drawingSoftware.Editor.Editor;
 import drawingSoftware.Shapes.MyBoundingBox;
 import drawingSoftware.Tool.EllipseTool;
@@ -33,14 +43,21 @@ import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.geometry.Bounds;
+import javafx.geometry.Insets;
+import javafx.geometry.Pos;
 import javafx.scene.Cursor;
+import javafx.scene.Group;
 import javafx.scene.Node;
+import javafx.scene.control.Alert;
 import javafx.scene.control.Button;
 import javafx.scene.control.ColorPicker;
 import javafx.scene.control.Label;
 import javafx.scene.control.Menu;
 import javafx.scene.control.MenuItem;
 import javafx.scene.control.ScrollPane;
+import javafx.scene.control.Slider;
+import javafx.scene.control.TextField;
+import javafx.scene.control.Alert.AlertType;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyCodeCombination;
 import javafx.scene.input.KeyCombination;
@@ -109,8 +126,28 @@ public class Controller implements Initializable{
 
     @FXML
     private MenuItem undoItem;
+    
+    @FXML
+    private Label widthLabel;
 
+    @FXML
+    private TextField widthTextField;
+    
+    @FXML
+    private Label heightLabel;
+
+    @FXML
+    private TextField heightTextField;
+    
+    @FXML
+    private Slider zoomSlider;
+
+    @FXML
+    private Label valueZoomSlider;
+
+    private Alert a;
     private SelectedToolContext selectedFigure; 
+
 
     /*FILE CHOOSER */
     FileChooser filechooser = new FileChooser();
@@ -170,8 +207,70 @@ public class Controller implements Initializable{
         setSelectedFigure();
         setInteriorColorPickerVisible();
         setAccelerators();
-    }
+    
+        
+        //scrollPane.setContent(drawingWindow);
+        this.setCursorCrosschair();
+        scrollPane.setLayoutX(0);
+        scrollPane.setLayoutY(0);
+         
+        borderColorPicker.setValue(Color.BLACK);
+        interiorColorPicker.setValue(Color.WHITE);
+        
+        Group elementGroup = new Group();
+        elementGroup.getChildren().add(drawingWindow);
+        scrollPane.setContent(elementGroup);
 
+        widthTextField.textProperty().addListener(new ChangeListener<String>(){
+
+            @Override
+            public void changed(ObservableValue<? extends String> observable, String oldValue, String newValue) {
+                // TODO Auto-generated method stub
+                
+                if (!newValue.matches("([0-9]+[.]?[0-9]{0,2})")) {
+                    if(newValue.length()<2){
+                        widthTextField.setText("");
+
+                    }else{
+                        widthTextField.setText(oldValue);
+                    }
+                }
+            }
+        });
+
+        heightTextField.textProperty().addListener(new ChangeListener<String>() {
+
+            @Override
+            public void changed(ObservableValue<? extends String> observable, String oldValue, String newValue) {
+                
+                if (!newValue.matches("([0-9]+[.]?[0-9]{0,2})")) {
+                    if(newValue.length()<2){
+                        heightTextField.setText("");
+
+                    }else{
+                        heightTextField.setText(oldValue);
+                }
+            }
+        }
+        });
+
+        a = new Alert(AlertType.NONE);
+        
+        //to edit 
+        widthTextField.setText("0.1");
+        heightTextField.setText("0.1");
+
+        widthTextField.setVisible(true);
+        heightTextField.setVisible(true);
+        widthLabel.setVisible(true);
+        heightLabel.setVisible(true);
+
+        SliderZoom sliderZoom = new SliderZoom(zoomSlider);
+        sliderZoom.setLabelOfSlider(valueZoomSlider);
+
+        drawingWindow.scaleXProperty().bind(sliderZoom.getSlider().valueProperty());
+        drawingWindow.scaleYProperty().bind(sliderZoom.getSlider().valueProperty());
+    } 
     public void addListenerToSelectedShape(){
         model.getSelectedProperty().addListener(new ChangeListener<Node>() {
             /*
@@ -216,6 +315,10 @@ public class Controller implements Initializable{
     }
     
     public void addListenerToShapes(){
+       
+
+        // selectedFigure = new SelectedToolContext(new RectangleTool(model, drawingWindow), drawingWindow, borderColorPicker, interiorColorPicker);
+        // setInteriorColorPickerVisible();
         /*
          * Il controller fa da intermediario tra il model delle figure aggiunte e cosa succede nella view
          */
@@ -233,6 +336,8 @@ public class Controller implements Initializable{
                 }
             }
         });
+
+       
     }
 
     /*
@@ -269,6 +374,7 @@ public class Controller implements Initializable{
     void undo(ActionEvent event){
         BackupCommand undoCommand = new UndoCommand(this);
         executeCommand(undoCommand);
+        
     }
 
     @FXML
@@ -313,15 +419,6 @@ public class Controller implements Initializable{
         setInteriorColorPickerVisible();
     }
 
-    @FXML
-    void colorBorder(ActionEvent event) {
-
-    }
-
-    @FXML
-    void colorInterior(ActionEvent event) {
-
-    }
 
     @FXML
     void onLoad(ActionEvent event) {
@@ -343,25 +440,184 @@ public class Controller implements Initializable{
         setInteriorColorPickerVisible();
     }    
 
-    private void setInteriorColorPickerVisible(){
-        interiorColorPicker.visibleProperty().bind(selectedFigure.isLineTool());
-        chooseInteriorColorLabel.visibleProperty().bind(selectedFigure.isLineTool());
+    @FXML
+    void editShape(ActionEvent event) {
+     /*
+      * disable text field when shape is not selected.
+      */
+    double valueTextFieldWight = 0.0;
+    double valueTextFieldHeight = 0.0;
+    Shape shape = (Shape) (drawingWindow.lookup("#selected"));
+    
+    if(!heightTextField.getText().contentEquals("") && !widthTextField.getText().contentEquals("")){
+        valueTextFieldWight = Double.parseDouble(widthTextField.getText());
+        valueTextFieldHeight = Double.parseDouble(heightTextField.getText());
+    }
+    if(valueTextFieldWight == 0.0 || valueTextFieldHeight == 0.0){
+        a.setAlertType(AlertType.ERROR);
+        a.setContentText("Inserted 0.0.\nTry with value greater than zero.");
+        a.show();
     }
 
-    private void setCursorCrosschair(){
-        drawingWindow.setOnMouseEntered(e ->{
-            drawingWindow.setCursor(Cursor.CROSSHAIR);
-        });
+    else if(shape!=null && valueTextFieldWight > 0.0 && valueTextFieldHeight > 0.0){
+        
+        if(shape instanceof Rectangle ){
+            
+            Rectangle rect=(Rectangle) shape;
+            double rectangleWidth = approximateDoubleValue(rect.getWidth());
+            double rectangleHeight = approximateDoubleValue(rect.getHeight());
+            double ratio = rectangleHeight/rectangleWidth;
+            double[] coordinates = new double[2];
+
+            if(valueTextFieldWight > drawingWindow.getPrefWidth() || valueTextFieldHeight > drawingWindow.getPrefHeight()){
+                coordinates = setDimShape(valueTextFieldWight, valueTextFieldHeight);
+                valueTextFieldWight = coordinates[0] - rect.getX();
+                valueTextFieldHeight = coordinates[1] - rect.getY();
+            }
+            
+            if(valueTextFieldWight != rectangleWidth && valueTextFieldHeight == rectangleHeight){
+                double height = valueTextFieldWight*ratio;
+                
+                rect.setWidth(valueTextFieldWight);
+                rect.setHeight(height);
+                
+                
+
+            }
+            else if(valueTextFieldHeight != rectangleHeight && valueTextFieldWight == rectangleWidth){
+                double weight = valueTextFieldWight/ratio;
+                rect.setHeight(valueTextFieldHeight);
+                rect.setWidth(weight);
+                
+                
+            }
+            else{
+                rect.setHeight(valueTextFieldHeight);
+                rect.setWidth(valueTextFieldWight);
+            
+            }
+            heightTextField.setText(String.valueOf(approximateDoubleValue(rect.getHeight())));
+            widthTextField.setText(String.valueOf(approximateDoubleValue(rect.getWidth())));
     }
 
-    public void setAccelerators(){
-        undoItem.setAccelerator(new KeyCodeCombination(KeyCode.Z, KeyCombination.CONTROL_DOWN));
-        copyItem.setAccelerator(new KeyCodeCombination(KeyCode.C, KeyCombination.CONTROL_DOWN));
-        pasteItem.setAccelerator(new KeyCodeCombination(KeyCode.V, KeyCombination.CONTROL_DOWN));
-        cutItem.setAccelerator(new KeyCodeCombination(KeyCode.X, KeyCombination.CONTROL_DOWN));
-        saveItem.setAccelerator(new KeyCodeCombination(KeyCode.S, KeyCombination.CONTROL_DOWN));
-        loadItem.setAccelerator(new KeyCodeCombination(KeyCode.O, KeyCombination.CONTROL_DOWN));
+    
+    
+    else if(shape instanceof Ellipse){
+        Ellipse ellipse = (Ellipse) shape;
+        double radiusXEllipse = approximateDoubleValue(ellipse.getRadiusX());
+        double radiusYEllipse = approximateDoubleValue(ellipse.getRadiusY());
+        double ratio=approximateDoubleValue(radiusYEllipse/radiusXEllipse);
+        double[] coordinates = new double[2];
+
+        if(valueTextFieldWight > drawingWindow.getPrefWidth() || valueTextFieldHeight > drawingWindow.getPrefHeight()){
+            coordinates = setDimShape(valueTextFieldWight, valueTextFieldHeight);
+            valueTextFieldWight = coordinates[0];
+            valueTextFieldHeight = coordinates[1];
+            ellipse.setCenterX(valueTextFieldWight/2);
+            ellipse.setCenterY(valueTextFieldHeight/2);
+        }
+        if(valueTextFieldWight/2 != radiusXEllipse && valueTextFieldHeight/2 == radiusYEllipse){
+            ellipse.setRadiusX(valueTextFieldWight/2);
+            ellipse.setRadiusY((valueTextFieldWight/2)*ratio);
+
+            
+        
+        }else if(valueTextFieldHeight/2 != radiusYEllipse && valueTextFieldWight/2 == radiusXEllipse){
+            ellipse.setRadiusY(valueTextFieldHeight/2);
+            ellipse.setRadiusX((valueTextFieldHeight/2)/ratio);
+            
+
+        }else{
+
+            ellipse.setRadiusY(valueTextFieldHeight/2);
+            ellipse.setRadiusX(valueTextFieldWight/2);
+            
+        }
+        heightTextField.setText(String.valueOf(approximateDoubleValue(ellipse.getRadiusY())));
+        widthTextField.setText(String.valueOf(approximateDoubleValue(ellipse.getRadiusX())));
+
     }
+    else if(shape instanceof Line){
+        // add label
+        Line line = (Line) shape;
+        double segmentWidth = calculateSegmentValue(line.getStartX(), line.getStartY(), line.getEndX(), line.getEndY());
+        double a = line.getEndX() - line.getStartX();
+        double b = line.getEndY() - line.getStartY();
+
+        double[] coordinates = new double[2];
+
+        if(valueTextFieldWight > drawingWindow.getPrefWidth() || valueTextFieldHeight > drawingWindow.getPrefHeight()){
+            coordinates = setDimShape(valueTextFieldWight, valueTextFieldHeight);
+            valueTextFieldWight = coordinates[0] - line.getStartX();
+            
+        }
+        double scalarFactor = valueTextFieldWight/segmentWidth;
+        double newEndX = line.getStartX() + a*scalarFactor;
+        double newEndY = line.getStartY() + b*scalarFactor;
+        line.setEndX(newEndX);
+        line.setEndY(newEndY);
+
+        widthTextField.setText(String.valueOf(calculateSegmentValue(line.getStartX(), line.getStartY(), newEndX, newEndY)));
+        
+    }
+    }
+
 }
+
+private double calculateSegmentValue(double startX, double startY, double endX, double endY){
+    double segmentValue = Math.sqrt(Math.pow((endY - startY), 2) + Math.pow((endX - startX), 2));
+    return approximateDoubleValue(segmentValue);
+}
+private double approximateDoubleValue(double number){
+    return Math.round(number*100.00)/100.00;
+}
+
+private void setInteriorColorPickerVisible(){
+    interiorColorPicker.visibleProperty().bind(selectedFigure.isLineTool());
+    chooseInteriorColorLabel.visibleProperty().bind(selectedFigure.isLineTool());
+}
+
+private void setCursorCrosschair(){
+    drawingWindow.setOnMouseEntered(e ->{
+        drawingWindow.setCursor(Cursor.CROSSHAIR);
+    });
+ }
+
+ private double[] setDimShape(double finalX, double finalY){
+    finalX = finalX < 0.0 ? 0.0 : finalX;
+    finalY = finalY < 0.0 ? 0.0 : finalY;
+            
+
+    if(finalX > drawingWindow.getMaxWidth()){
+        finalX = drawingWindow.getMaxWidth();
+        drawingWindow.setPrefWidth(finalX);
+
+    }else if(finalX > drawingWindow.getPrefWidth() && !(finalX > drawingWindow.getMaxWidth())){
+        drawingWindow.setPrefWidth(finalX);
+    }
+
+    if(finalY > drawingWindow.getMaxHeight()){
+        finalY = drawingWindow.getMaxHeight();
+        drawingWindow.setPrefHeight(finalY);
+    
+    }else if(finalY > drawingWindow.getPrefHeight() && !(finalY > drawingWindow.getMaxHeight())){
+        drawingWindow.setPrefHeight(finalY);
+    }
+    
+    double[] coordinates = {finalX, finalY};
+    return coordinates;
+ }
+
+ public void setAccelerators(){
+    undoItem.setAccelerator(new KeyCodeCombination(KeyCode.Z, KeyCombination.CONTROL_DOWN));
+    copyItem.setAccelerator(new KeyCodeCombination(KeyCode.C, KeyCombination.CONTROL_DOWN));
+    pasteItem.setAccelerator(new KeyCodeCombination(KeyCode.V, KeyCombination.CONTROL_DOWN));
+    cutItem.setAccelerator(new KeyCodeCombination(KeyCode.X, KeyCombination.CONTROL_DOWN));
+    saveItem.setAccelerator(new KeyCodeCombination(KeyCode.S, KeyCombination.CONTROL_DOWN));
+    loadItem.setAccelerator(new KeyCodeCombination(KeyCode.O, KeyCombination.CONTROL_DOWN));
+}
+}
+
+
 
 
