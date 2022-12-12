@@ -1,24 +1,46 @@
 package drawingSoftware.Editor;
 
+import java.util.List;
+
 import drawingSoftware.Model;
 import drawingSoftware.Command.BackupCommand.ShapeCommand.DrawShapeCommand;
+import drawingSoftware.Managers.ResizeTextFieldManager;
+import drawingSoftware.Shapes.MyBoundingBox;
+import drawingSoftware.Tool.EllipseTool;
+import drawingSoftware.Tool.LineTool;
+import drawingSoftware.Tool.RectangleTool;
+import javafx.geometry.Bounds;
+import javafx.scene.control.TextField;
+import javafx.scene.layout.Pane;
 import javafx.scene.paint.Paint;
 import javafx.scene.shape.Ellipse;
 import javafx.scene.shape.Line;
+import javafx.scene.shape.Polygon;
 import javafx.scene.shape.Rectangle;
 import javafx.scene.shape.Shape;
 
 /*
- * Receiver and Originator 
+
+ * Editor is the receiver class which holds
+ * the business logic for copying, cutting, pasting, deleting
+ * and resizing a shape. 
+ * The copied/cut shapes is saved in a specific clipboard which
+ * will be used for copying the selected shape in the drawingWindow. 
+ * All these functions operate on the nodes of the Model class. 
  */
+
 public class Editor {
 
     private Shape clipboard;
-
     private Model model;        /* the state */
+    private Pane drawingWindow; 
 
-    public Editor(Model model){
+    public Editor(Model model, Pane drawingWindow){
         this.model = model; 
+        this.drawingWindow = drawingWindow;
+    }
+    public Editor(Model model){
+        this.model = model;
     }
 
     public Model getModel(){
@@ -39,9 +61,13 @@ public class Editor {
             Line duplicatedLine = dupliLine((Line)clipboard);
             drawShapeCommand = new DrawShapeCommand(model, duplicatedLine);
         }
-        else{
+        else if (clipboard instanceof Ellipse){
             Ellipse duplicatedEllipse = dupliEllipse((Ellipse)clipboard);
             drawShapeCommand = new DrawShapeCommand(model,duplicatedEllipse);
+        }
+        else{
+            Polygon duplicatedPolygon = dupliPolygon((Polygon)clipboard);
+            drawShapeCommand = new DrawShapeCommand(model,duplicatedPolygon);
         }
         drawShapeCommand.execute();
     }
@@ -56,18 +82,60 @@ public class Editor {
             model.removeShape(model.getSelectedShape());
             model.setCurrentShape(null);
     }
-
-
-
-
-
-
-
-
     /*
 
      * methods for pasting
      */
+    public void edit(ResizeTextFieldManager textFieldManager, MyBoundingBox boundingBox){
+
+        
+    /*
+      * disable text field when shape is not selected.
+      */
+        
+      double valueTextFieldWight = 0.0;
+      double valueTextFieldHeight = 0.0;
+      Shape shape = (Shape) model.getSelectedShape();
+
+      valueTextFieldWight = textFieldManager.setValueFieldWidth(valueTextFieldWight);
+      valueTextFieldHeight = textFieldManager.setValueFieldHeight(valueTextFieldHeight);
+
+      if(shape!=null && valueTextFieldWight > 0.0 && valueTextFieldHeight > 0.0){
+          
+        if(shape instanceof Rectangle){
+            Rectangle rect=(Rectangle) shape;
+            RectangleTool resizeRectangle = new RectangleTool(rect, model, drawingWindow);
+            resizeRectangle.setNewDimShape(rect.getWidth(), rect.getHeight(), valueTextFieldWight, valueTextFieldHeight);
+            textFieldManager.setFieldWight(resizeRectangle.getWidthRectangle());
+            textFieldManager.setFieldHeight(resizeRectangle.getHeightRectangle());
+           
+        }
+
+        else if(shape instanceof Ellipse){
+            Ellipse ellipse = (Ellipse) shape;
+            EllipseTool resizeEllipse = new EllipseTool(ellipse, model, drawingWindow);
+            resizeEllipse.setNewDimShape(ellipse.getRadiusX(), ellipse.getRadiusY(), valueTextFieldWight, valueTextFieldHeight);
+            textFieldManager.setFieldWight(resizeEllipse.getWidthEllipse());
+            textFieldManager.setFieldHeight(resizeEllipse.getHeightEllipse());
+        
+        }else if(shape instanceof Line){
+            Line line = (Line) shape;
+            LineTool resizeLine = new LineTool(line, model, drawingWindow);
+            resizeLine.setNewDimShape(valueTextFieldWight);
+            textFieldManager.setFieldWight(resizeLine.getSegmentSize());
+        }
+          setBoundBox(shape, boundingBox);
+
+      }
+    }
+
+    private void setBoundBox(Shape shapeSelected, MyBoundingBox boundingBox){
+        boundingBox.setX(shapeSelected.getBoundsInLocal().getMinX());
+        boundingBox.setY(shapeSelected.getBoundsInLocal().getMinY());
+        boundingBox.setWidth(shapeSelected.getBoundsInLocal().getWidth());
+        boundingBox.setHeight(shapeSelected.getBoundsInLocal().getHeight());
+    }
+
     public Rectangle dupliRectangle(Rectangle rectangle){
         Double x = rectangle.getX();
         Double y = rectangle.getY();
@@ -118,6 +186,19 @@ public class Editor {
         copiedLine.setEndY(endY+10);
         copiedLine.setStroke(stroke);
         return copiedLine;
+    }
+
+    public Polygon dupliPolygon(Polygon poly){
+
+        Polygon copiedPoly = new Polygon();
+
+        copiedPoly.getPoints().addAll(poly.getPoints());
+        copiedPoly.setStroke(poly.getStroke());
+        copiedPoly.setFill(poly.getFill());
+        copiedPoly.setLayoutX(poly.getLayoutX());
+        copiedPoly.setLayoutY(poly.getLayoutY());
+
+        return copiedPoly; 
     }
 
     /*

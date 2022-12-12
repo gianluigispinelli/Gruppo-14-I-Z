@@ -3,130 +3,94 @@ package drawingSoftware.Tool;
 
 import drawingSoftware.Controller;
 import drawingSoftware.Model;
-import drawingSoftware.Command.BackupCommand.ShapeCommand.DrawShapeCommand;
 import javafx.beans.property.SimpleBooleanProperty;
 import javafx.beans.value.ObservableBooleanValue;
 import javafx.scene.control.ColorPicker;
-import javafx.scene.control.TextField;
-import javafx.scene.input.MouseButton;
 import javafx.scene.layout.Pane;
 import javafx.scene.shape.Rectangle;
 
-public class RectangleTool implements Tool{
-    private Controller controller; 
-    private Model model; 
+
+/* Class that extends toolShape abstract class. This class
+ is responsible for drawing Rectangle. It is a concrete state of State pattern */
+
+public class RectangleTool extends ShapeTool{
     private Rectangle rectangle;
-    private Pane drawingWindow;
-    private double finalDragX;
-    private double startDragX;
-    private double finalDragY;
-    private double startDragY;
     private ColorPicker borderColor;
     private ColorPicker fillColor;
+    private Controller controller; 
 
-    public RectangleTool(Controller controller, Model model, Pane drawingWindow) {
-        this.controller = controller;
-        this.model = model; 
-        this.drawingWindow = drawingWindow;
+    public RectangleTool(Rectangle rectangle, Model model, Pane drawingWindow){
+        super(model, drawingWindow);
+        this.rectangle = rectangle;
+    }
+        
+    public RectangleTool(Controller controller, Model model, Pane drawingWindow, ColorPicker borderColor, ColorPicker fillColor) {
+        super(controller, model, drawingWindow);
+        this.controller = controller; 
+        this.borderColor = borderColor;
+        this.fillColor = fillColor;  
+        super.deselectAllShape();
+
     }
 
     @Override
-    public void useSelectedTool(ColorPicker borderColor, ColorPicker fillColor) {
-        this.borderColor = borderColor;
-        this.fillColor = fillColor;
-        this.captureMouseEvent(); 
+    public void useSelectedTool() {
+        this.createShape();
     }
 
-    private void captureMouseEvent(){
+    // Method that instantiate rectangle and set fill and border color.
+    @Override
+    public void createShape(){
+        double startDragX = super.getStartDragX();
+        double finalDragX = super.getFinalDragX();
+        double startDragY = super.getStartDragY();
+        double finalDragY = super.getFinalDragY();
+       
 
-        drawingWindow.setOnMousePressed(e -> {
-            
-            if(e.getButton() == MouseButton.PRIMARY){
-                this.setStartDragX(e.getX());
-                this.setStartDragY(e.getY());
-            }
-            e.consume();
-        });
-        //event filter because mouse move quickly ad 
-        drawingWindow.setOnMouseReleased(e ->{
-
-                if(e.getButton() == MouseButton.PRIMARY){
-                    this.setFinalDragX(e.getX());
-                    this.setFinalDragY(e.getY());
-                    this.createRectangle();
-                    e.consume();
-                }
-            
-        });
-    }
-
-    private void createRectangle(){
         this.rectangle = new Rectangle();
+        
         this.setDim(startDragX, finalDragX, startDragY, finalDragY);
         this.rectangle.setFill(fillColor.getValue());
         this.rectangle.setStroke(borderColor.getValue());
-        this.drawRectangle();
+        // Call to the superclass method
+        super.drawShape(this.rectangle);
+        
     }
+    
 
-    private void drawRectangle(){
-        DrawShapeCommand drawCommand = new DrawShapeCommand(model, this.rectangle);
-        controller.executeCommand(drawCommand);
-    }
+    // Method for setting the width and height attribute of the Rectangle by taking in input the coordinates of the points
+    // in which the draw starts and ends.
+    @Override
+    public void setDim(double startDragX, double finalDragX, double startDragY, double finalDragY){
 
-    private void setDim(double startDragX, double finalDragX, double startDragY, double finalDragY){
-        
-        finalDragX = finalDragX < 0.0 ? 0.0 : finalDragX;
-        startDragX = startDragX < 0.0 ? 0.0 : startDragX;
-        finalDragY = finalDragY < 0.0 ? 0.0 : finalDragY;
-        startDragY = startDragY < 0.0 ? 0.0 : startDragY;
+        super.setDim(startDragX, finalDragX, startDragY, finalDragY);
 
-        
-        if(finalDragX > drawingWindow.getMaxWidth()){
-            finalDragX = drawingWindow.getMaxWidth();
-            drawingWindow.setPrefWidth(finalDragX);
+        startDragX = super.getStartDragX();
+        startDragY = super.getStartDragY();
+        finalDragX = super.getFinalDragX();
+        finalDragY = super.getFinalDragY();
 
-        }else if(finalDragX > drawingWindow.getPrefWidth() && !(finalDragX > drawingWindow.getMaxWidth())){
-            drawingWindow.setPrefWidth(finalDragX);
-        }
+        double width = this.calculateDim(startDragX,finalDragX);
+        double height = this.calculateDim(startDragY, finalDragY);
 
-        if(finalDragY > drawingWindow.getMaxHeight()){
-            finalDragY = drawingWindow.getMaxHeight();
-            drawingWindow.setPrefHeight(finalDragY);
-        
-        }else if(finalDragY > drawingWindow.getPrefHeight()  && !(finalDragY > drawingWindow.getMaxHeight())){
-                drawingWindow.setPrefHeight(finalDragY);
-        }
-
-        double PointsX[] = this.checkDrawStartPoint(startDragX, finalDragX);
-        double PointsY[] = this.checkDrawStartPoint(startDragY, finalDragY);
-
-        
-        
-        
-        double width = this.calculateDim(startDragX, finalDragX);
-        double height = this.calculateDim(startDragY, finalDragY);    
-
-        this.rectangle.setX(PointsX[0]);
-        this.rectangle.setY(PointsY[0]);
+        this.rectangle.setX(startDragX);
+        this.rectangle.setY(startDragY);
 
         this.rectangle.setWidth(width);
         this.rectangle.setHeight(height);
     }
 
-    private double[] checkDrawStartPoint(double start, double end){
-        double startPoint, endPoint;
-        if (start < end){
-            startPoint = start;
-            endPoint = end;   
-        }
-        else{
-            startPoint = end;
-            endPoint = start;    
-        }
-        double points[] = {startPoint, endPoint};
-        return points;
+    @Override
+    public void setNewDimShape(double oldWidth, double oldHeight, double newWidth, double newHeight){
+        
+        //super.setNewDimShape(this.rectangle.getWidth(), this.rectangle.getHeight(), newWidth, newHeight);
+        super.setNewDimShape(oldWidth, oldHeight, newWidth, newHeight);
+        this.rectangle.setWidth(super.getFinalDragX());
+        this.rectangle.setHeight(super.getFinalDragY());
     }
+    
 
+    // Utility method for calculate width and height of the rectangle
     private double calculateDim(double startPoint, double endPoint){
         return(Math.abs(endPoint - startPoint));
     }
@@ -137,20 +101,16 @@ public class RectangleTool implements Tool{
         ObservableBooleanValue visible = new SimpleBooleanProperty(true);
         return visible;
     }
-
-    public void setFinalDragX(double finalDragX) {
-        this.finalDragX = finalDragX;
+    public double getWidthRectangle(){
+        return super.approximateDoubleValue(this.rectangle.getWidth());
     }
-
-    public void setStartDragX(double startDragX) {
-        this.startDragX = startDragX;
+    public double getHeightRectangle(){
+        return super.approximateDoubleValue(this.rectangle.getHeight());
     }
-
-    public void setFinalDragY(double finalDragY) {
-        this.finalDragY = finalDragY;
+    public Rectangle getRectangle(){
+        return this.rectangle;
     }
-
-    public void setStartDragY(double startDragY) {
-        this.startDragY = startDragY;
+    public void setRectangle(Rectangle rectangle){
+        this.rectangle = rectangle;
     }
 }

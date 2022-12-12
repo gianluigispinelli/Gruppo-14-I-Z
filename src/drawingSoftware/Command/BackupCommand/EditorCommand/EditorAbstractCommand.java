@@ -7,8 +7,15 @@ import javafx.collections.FXCollections;
 public abstract class EditorAbstractCommand extends BackupCommand{
 
     /*
-     * Coupling: EditorAbstractCommand depends on Editor. It implements Command.
-     */
+
+    * EditorAbstractCommand is an abstract class for those commands which
+    * delegate the business logic to the Editor class playing the role of
+    * the Receiver. Every son of this class will inherit the method for
+    * saving his own backup, which is the current state of the Model
+    * in terms of the current nodes on the drawingWindow. 
+    * The sons also will inherit the method undo() for restoring
+    * the state they saved via updated the model nodes.  
+    */
 
     protected Editor editor; 
     

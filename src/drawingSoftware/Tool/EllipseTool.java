@@ -2,175 +2,119 @@ package drawingSoftware.Tool;
 
 import drawingSoftware.Controller;
 import drawingSoftware.Model;
-import drawingSoftware.Command.BackupCommand.ShapeCommand.DrawShapeCommand;
 import javafx.beans.property.SimpleBooleanProperty;
 import javafx.beans.value.ObservableBooleanValue;
 import javafx.scene.control.ColorPicker;
-import javafx.scene.control.TextField;
-import javafx.scene.input.MouseButton;
+import javafx.scene.layout.Pane;
+import javafx.scene.shape.Ellipse;
+import javafx.beans.property.SimpleBooleanProperty;
+import javafx.beans.value.ObservableBooleanValue;
+import javafx.scene.control.ColorPicker;
 import javafx.scene.layout.Pane;
 import javafx.scene.shape.Ellipse;
 
-public class EllipseTool implements Tool{
-    private Controller controller; 
-    private Model model; 
-    private Ellipse ellipse;
-    private Pane drawingWindow;
-    private double finalDragX;
-    private double startDragX;
-    private double finalDragY;
-    private double startDragY;
-    private ColorPicker borderColor;
-    private ColorPicker fillColor;    
 
-    public EllipseTool(Controller controller, Model model, Pane drawingWindow) {
+/* Class that extends toolShape abstract class. This class is responsible for drawing Ellipse.
+ It is a concrete state of State pattern */
+
+
+public class EllipseTool extends ShapeTool{
+    private Controller controller; 
+    private Ellipse ellipse;
+    private ColorPicker borderColor;
+    private ColorPicker fillColor;
+
+
+    public EllipseTool(Ellipse ellipse, Model model, Pane drawingWindow){
+        super(model, drawingWindow);
+        this.ellipse = ellipse;
+    }
+
+        
+    public EllipseTool(Controller controller, Model model, Pane drawingWindow, ColorPicker borderColor, ColorPicker fillColor) {
+        super(controller, model, drawingWindow);
         this.controller = controller; 
-        this.model = model; 
-        this.drawingWindow = drawingWindow;
+        this.borderColor = borderColor;
+        this.fillColor = fillColor; 
+        super.deselectAllShape();
     }
 
     @Override
-    public void useSelectedTool(ColorPicker borderColor, ColorPicker fillColor) {
-        this.borderColor = borderColor;
-        this.fillColor = fillColor;
-        this.captureMouseEvent();
+    public void useSelectedTool() {        
+        //super.setDrawParameters();
+        this.createShape();
     }
 
-    private void captureMouseEvent(){
+    // Method that instantiate ellipse and set fill and border color.
+    @Override
+    public void createShape(){
+        double startDragX = super.getStartDragX();
+        double finalDragX = super.getFinalDragX();
+        double startDragY = super.getStartDragY();
+        double finalDragY = super.getFinalDragY();
 
-        drawingWindow.setOnMousePressed(e -> {
-            
-            if(e.getButton() == MouseButton.PRIMARY){
-                this.setStartDragX(e.getX());
-                this.setStartDragY(e.getY());
-            }
-            e.consume();
-        });
-        //event filter because mouse move quickly ad 
-        drawingWindow.setOnMouseReleased(e ->{
-                if(e.getButton() == MouseButton.PRIMARY){
-                    this.setFinalDragX(e.getX());
-                    this.setFinalDragY(e.getY());
-                    this.createEllipse();
-                    e.consume();
-                }
-        });
-    }
-
-    private void createEllipse(){
         this.ellipse = new Ellipse();
         this.setDim(startDragX, finalDragX, startDragY, finalDragY);
         this.ellipse.setFill(fillColor.getValue());
         this.ellipse.setStroke(borderColor.getValue());
-        this.drawEllipse();
+        super.drawShape(ellipse);
+        this.rotate(ellipse);
+        
     }
-    
+
+    // Method for setting the attributes of the ellipse by taking in input the coordinates of the points
+    // in which the draw starts and ends.
+    @Override
     public void setDim(double startDragX, double finalDragX, double startDragY, double finalDragY){
-        finalDragX = finalDragX < 0.0 ? 0.0 : finalDragX;
-        startDragX = startDragX < 0.0 ? 0.0 : startDragX;
-        finalDragY = finalDragY < 0.0 ? 0.0 : finalDragY;
-        startDragY = startDragY < 0.0 ? 0.0 : startDragY;
-               
-
-        if(finalDragX > drawingWindow.getMaxWidth()){
-            finalDragX = drawingWindow.getMaxWidth();
-            drawingWindow.setPrefWidth(finalDragX);
-
-        }else if(finalDragX > drawingWindow.getPrefWidth() && !(finalDragX > drawingWindow.getMaxWidth())){
-            drawingWindow.setPrefWidth(finalDragX);
-        }
-
-        if(finalDragY > drawingWindow.getMaxHeight()){
-            finalDragY = drawingWindow.getMaxHeight();
-            drawingWindow.setPrefHeight(finalDragY);
+        super.setDim(startDragX, finalDragX, startDragY, finalDragY);
         
-        }else if(finalDragY > drawingWindow.getPrefHeight() && !(finalDragY > drawingWindow.getMaxHeight())){
-            drawingWindow.setPrefHeight(finalDragY);
-        }
-        
-
-        double PointsX[] = this.checkDrawStartPoint(startDragX, finalDragX);
-        double PointsY[] = this.checkDrawStartPoint(startDragY, finalDragY);
-        
-        double width = this.calculateDim(startDragX, finalDragX);
+        startDragX = super.getStartDragX();
+        startDragY = super.getStartDragY();
+        finalDragX = super.getFinalDragX();
+        finalDragY = super.getFinalDragY();
+        double width = this.calculateDim(startDragX,finalDragX);
         double height = this.calculateDim(startDragY, finalDragY);
 
-        
-
-        this.ellipse.setCenterX(PointsX[0] + Math.abs(finalDragX - startDragX)/2);
-        this.ellipse.setCenterY(PointsY[0] +  Math.abs(finalDragY - startDragY)/2);
+        this.ellipse.setCenterX(startDragX + Math.abs(finalDragX - startDragX)/2);
+        this.ellipse.setCenterY(startDragY+  Math.abs(finalDragY - startDragY)/2);
 
         this.ellipse.setRadiusX(width/2.0);
         this.ellipse.setRadiusY(height/2.0);
-}
-
-    /*
-
-     * function for calculating coordinates of the shape 
-     */
-
-    private double[] checkDrawStartPoint(double start, double end){
-        double startPoint, endPoint;
-        if (start < end){
-            startPoint = start;
-            endPoint = end;   
-        }
-        else{
-            startPoint = end;
-            endPoint = start;    
-        }
-        double points[] = {startPoint, endPoint};
-        return points;
     }
-
-    /*
-
-     * function for calculating width and height
-     */
 
     private double calculateDim(double startPoint, double endPoint){
         return(Math.abs(endPoint - startPoint));
     }
-
-
-
-    private void drawEllipse(){
-        DrawShapeCommand drawCommand = new DrawShapeCommand(model,this.ellipse);
-        controller.executeCommand(drawCommand);
+    
+    @Override
+    public void setNewDimShape(double oldWigth, double oldHeight, double newWidth, double newHeight){
+        
+        super.setNewDimShape(oldWigth, oldHeight, newWidth, newHeight);
+        this.ellipse.setRadiusX(super.getFinalDragX());
+        this.ellipse.setRadiusY(super.getFinalDragY());
+        
     }
-
-
-
+    
     @Override
     public ObservableBooleanValue isNotLineTool() {
         ObservableBooleanValue visible = new SimpleBooleanProperty(true);
         return visible;
     }
 
-
-
-    public void setFinalDragX(double finalDragX) {
-        this.finalDragX = finalDragX;
+    public void rotate(Ellipse e){
+        e.setRotate(0);
+        e.setScaleX(-1);
     }
-
-
-
-    public void setStartDragX(double startDragX) {
-        this.startDragX = startDragX;
+    public double getWidthEllipse(){
+        return super.approximateDoubleValue(this.ellipse.getRadiusX());
     }
-
-
-
-    public void setFinalDragY(double finalDragY) {
-        this.finalDragY = finalDragY;
+    public double getHeightEllipse(){
+        return super.approximateDoubleValue(this.ellipse.getRadiusY());
     }
-
-
-
-    public void setStartDragY(double startDragY) {
-        this.startDragY = startDragY;
+    public Ellipse getEllipse(){
+        return this.ellipse;
     }
-
-
-    
+    public void setEllipse(Ellipse ellipse){
+        this.ellipse = ellipse;
+    }
 }

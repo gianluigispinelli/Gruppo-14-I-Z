@@ -13,20 +13,20 @@ import static org.junit.Assert.*;
 
 public class CopyCommandTest {
 
-    CopyCommand cc; 
-    Editor e;
-    Model m; 
+    CopyCommand copyCommand; 
+    Editor editor;
+    Model model; 
 
     @Before
     public void setUp(){
-        m = new Model(); 
-        e = new Editor(m);
-        cc = new CopyCommand(e);
+        model = Model.getInstance(); 
+        editor = new Editor(model);
+        copyCommand = new CopyCommand(editor);
     }
 
     @Test
     public void testCopyCommand(){      /* testing constructor */
-        assertEquals(cc.getEditor(), e);
+        assertEquals(copyCommand.getEditor(), editor);
     }
 
     @Test
@@ -38,9 +38,10 @@ public class CopyCommandTest {
          *  1) copying a rectangle
          *  2) copying a line
          *  3) copying an ellipse
-         *  4) bondary case: null figure (when the users hasn't selected anything)
-         *  these test cases verify for these operation that they save the state of the model before executing their
-         *  operation 
+         *  4) bondary case: null figure (when the users hasn't selected any shape)
+         *  these test cases verify that:
+         *   - after the copy operation in the variable clipboard of Editor the shape has been saved
+         *   - the copy operation copies the selected figure and no others
          */
 
          /*
@@ -48,35 +49,43 @@ public class CopyCommandTest {
           * 1) 
           */
         Rectangle r = new Rectangle(10,10,10,10); 
-        m.setSelectedShape(r);
-        cc.execute();   /* copy operation */
-        assertEquals(m.getSelectedShape(), r);  /* check if the copied shape is the one selected on the drawingWindow */
-
+        model.addShape(r);
+        model.setSelectedShape(r);
+        copyCommand.execute();   /* copy operation */
+        /* check if the copied shape is the one selected on the drawingWindow */
+        assertEquals(copyCommand.getEditor().getModel().getSelectedShape(), copyCommand.getEditor().getClipboard());  
+        /* check if the copied shape is in the clipboard */
+        assertEquals(copyCommand.getEditor().getClipboard(), r);    
         /*
 
          * 2) 
          */
         Line l = new Line(10, 10, 10, 10);
-        m.setSelectedShape(l);
-        cc.execute();
-        assertEquals(m.getSelectedShape(), l);
+        model.addShape(l);
+        model.setSelectedShape(l);
+        copyCommand.execute();
+        assertEquals(copyCommand.getEditor().getModel().getSelectedShape(), copyCommand.getEditor().getClipboard());
+        assertEquals(copyCommand.getEditor().getClipboard(), l);    /* check if the copied shape is in the clipboard */
 
         /*
 
          * 3)
          */
         Ellipse e = new Ellipse(10,10,10,10);
-        m.setSelectedShape(e);
-        cc.execute();
-        assertEquals(m.getSelectedShape(), e);
+        model.addShape(e);
+        model.setSelectedShape(e);
+        copyCommand.execute();
+        assertEquals(copyCommand.getEditor().getModel().getSelectedShape(), copyCommand.getEditor().getClipboard());
+        assertEquals(copyCommand.getEditor().getClipboard(), e);    /* check if the copied shape is in the clipboard */
 
         /*
 
          * 4)  
          */
-        m.setSelectedShape(null);
-        cc.execute();
-        assertEquals(m.getSelectedShape(), null);
+        model.setSelectedShape(null);
+        copyCommand.execute();
+        assertEquals(copyCommand.getEditor().getModel().getSelectedShape(), copyCommand.getEditor().getClipboard());
+        assertEquals(copyCommand.getEditor().getClipboard(), null);    /* check if the clipboard doesn't save anything when we haven't selected a shape */
     }
     
 }

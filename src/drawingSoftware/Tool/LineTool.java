@@ -3,100 +3,48 @@ package drawingSoftware.Tool;
 
 import drawingSoftware.Controller;
 import drawingSoftware.Model;
-import drawingSoftware.Command.BackupCommand.ShapeCommand.DrawShapeCommand;
 import javafx.beans.property.SimpleBooleanProperty;
 import javafx.beans.value.ObservableBooleanValue;
 import javafx.scene.control.ColorPicker;
-import javafx.scene.control.TextField;
-import javafx.scene.input.MouseButton;
 import javafx.scene.layout.Pane;
 import javafx.scene.shape.Line;
 
-public class LineTool implements Tool{
+
+/* Class that extends toolShape abstract class. T
+his class is responsible for drawing Line. 
+It is a concrete state of State pattern */
+
+public class LineTool extends ShapeTool{
     private Controller controller; 
     private Model model; 
     private Pane drawingWindow;
-
     private Line line;
-
-    private double finalDragX;
-    private double startDragX;
-    private double finalDragY;
-    private double startDragY;
     private ColorPicker borderColor;
-    private ColorPicker fillColor;    
 
+    public LineTool(Line line, Model model, Pane drawingWindow){
+        super(model, drawingWindow);
+        this.line = line;
+    }
 
-    public LineTool(Controller controller, Model model,Pane drawingWindow) {
+    public LineTool(Controller controller, Model model,Pane drawingWindow, ColorPicker borderColor) {
+        super(controller, model, drawingWindow);
         this.controller = controller; 
-        this.model = model; 
-        this.drawingWindow = drawingWindow;
-
-        this.captureMouseEvent();
-    }
-
-    @Override
-    public void useSelectedTool(ColorPicker borderColor, ColorPicker fillColor) {
         this.borderColor = borderColor;
-        this.fillColor = fillColor;
-        this.captureMouseEvent();
-
-        
+        //this.captureMouseEvent();
+        super.deselectAllShape();
     }
 
-    private void captureMouseEvent(){
 
-        drawingWindow.setOnMousePressed(e -> {
-            
-            if(e.getButton() == MouseButton.PRIMARY){
-                this.setStartDragX(e.getX());
-                this.setStartDragY(e.getY());
-            }
-            e.consume();
-        });
-        //event filter because mouse move quickly ad 
-        drawingWindow.setOnMouseReleased(e ->{
-
-                if(e.getButton() == MouseButton.PRIMARY){
-                    this.setFinalDragX(e.getX());
-                    this.setFinalDragY(e.getY());
-                    this.createLine();
-                    e.consume();
-                }
-        });
-    }
-
-    private void createLine(){
-        this.line = new Line();
-        this.setDim(startDragX, finalDragX, startDragY, finalDragY);
-        this.line.setFill(fillColor.getValue());
-        this.line.setStroke(borderColor.getValue());
-        this.drawLine();
-    }
-
+    // Method for setting the dimension  of the Rectangle whose diagonal is the Line to draw by taking in input the coordinates of the points
+    // in which the draw starts and ends.
     public void setDim(double startDragX, double finalDragX, double startDragY, double finalDragY){
+       //super.setDim(startDragX, finalDragX, startDragY, finalDragY);
         
-        finalDragX = finalDragX < 0.0 ? 0.0 : finalDragX;
-        startDragX = startDragX < 0.0 ? 0.0 : startDragX;
-        finalDragY = finalDragY < 0.0 ? 0.0 : finalDragY;
-        startDragY = startDragY < 0.0 ? 0.0 : startDragY;
+        startDragX = super.getStartDragX();
+        startDragY = super.getStartDragY();
+        finalDragX = super.getFinalDragX();
+        finalDragY = super.getFinalDragY();
         
-        if(finalDragX > drawingWindow.getMaxWidth()){
-            finalDragX = drawingWindow.getMaxWidth();
-            drawingWindow.setPrefWidth(finalDragX);
-
-        }else if(finalDragX > drawingWindow.getPrefWidth() && !(finalDragX > drawingWindow.getMaxWidth())){
-            drawingWindow.setPrefWidth(finalDragX);
-        }
-
-        if(finalDragY > drawingWindow.getMaxHeight()){
-            finalDragY = drawingWindow.getMaxHeight();
-            drawingWindow.setPrefHeight(finalDragY);
-        
-        }else if(finalDragY > drawingWindow.getPrefHeight() && !(finalDragY > drawingWindow.getMaxHeight()) ){
-                drawingWindow.setPrefHeight(finalDragY);
-        }
-
         this.setXDim(startDragX, finalDragX);
         this.setYDim(startDragY, finalDragY);
     }
@@ -111,10 +59,26 @@ public class LineTool implements Tool{
         this.line.setEndY(yEndValue);  
     }
 
-    private void drawLine(){
-        DrawShapeCommand drawCommand = new DrawShapeCommand(model,this.line);
-        controller.executeCommand(drawCommand);
+
+    @Override
+    public void useSelectedTool() {
+        this.createShape();
     }
+
+    public void setNewDimShape(double newWidth){
+        
+        double segmentWidth = calculateSegmentValue(line.getStartX(), line.getStartY(), line.getEndX(), line.getEndY());
+        double a = line.getEndX() - line.getStartX();
+        double b = line.getEndY() - line.getStartY();
+
+        double scalarFactor = newWidth/segmentWidth;
+        double newEndX = line.getStartX() + a*scalarFactor;
+        double newEndY = line.getStartY() + b*scalarFactor;
+        line.setEndX(newEndX);
+        line.setEndY(newEndY);
+        
+    }
+
 
     @Override
     public ObservableBooleanValue isNotLineTool() {
@@ -123,20 +87,27 @@ public class LineTool implements Tool{
     }
 
 
-    public void setFinalDragX(double finalDragX) {
-        this.finalDragX = finalDragX;
+    @Override
+    public void createShape() {
+        this.line = new Line();
+        this.setDim(startDragX, finalDragX, startDragY, finalDragY);
+        this.line.setStroke(borderColor.getValue());
+        super.drawShape(line);
+        
     }
 
-    public void setStartDragX(double startDragX) {
-        this.startDragX = startDragX;
+    private double calculateSegmentValue(double startX, double startY, double endX, double endY){
+        double segmentValue = Math.sqrt(Math.pow((endY - startY), 2) + Math.pow((endX - startX), 2));
+        return super.approximateDoubleValue(segmentValue);
     }
-
-    public void setFinalDragY(double finalDragY) {
-        this.finalDragY = finalDragY;
+    
+    public double getSegmentSize(){
+        return calculateSegmentValue(startDragY, startDragX, finalDragY, finalDragX);
     }
-
-    public void setStartDragY(double startDragY) {
-        this.startDragY = startDragY;
+    public void setLine(Line line){
+        this.line = line;
     }
-
+    public Line getLine(){
+        return this.line;
+    }
 }

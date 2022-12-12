@@ -20,20 +20,20 @@ import static org.junit.Assert.*;
 public class UndoCommandTest {
 
     UndoCommand undoCommand;
-    Controller c;
+    Controller controller;
 
     @Before
     public void setUp(){
-        c = new Controller(); 
-        undoCommand = new UndoCommand(c);
-        c.setModel(new Model());
-        c.setEditor(new Editor(c.getModel()));
-        c.setCommandHistory(new CommandHistory());
+        controller = new Controller(); 
+        undoCommand = new UndoCommand(controller);
+        controller.setModel(Model.getInstance());
+        controller.setEditor(new Editor(controller.getModel()));
+        controller.setCommandHistory(new CommandHistory());
     }
 
     @Test
     public void TestUndoCommand(){  /* test del costruttore */
-        assertEquals(c, undoCommand.getController());
+        assertEquals(controller, undoCommand.getController());
     }
 
     @Test
@@ -47,7 +47,10 @@ public class UndoCommandTest {
          *  3) undo after a drawing operation
          *  4) undo after a delete operation
          *  these test cases verify for these operation that they save the state of the model before executing their
-         *  operation 
+         *  operation.
+         *  Every command extending the BackupCommand interface has a backup where it saves the state of the
+         *  model before executing its own operation.
+         *  We're gonna verify that throught this tests.
          */
 
 
@@ -55,55 +58,54 @@ public class UndoCommandTest {
 
          * 1)
          */
-        c.getModel().setSelectedShape(new Rectangle(10,10,10,10));
-        CopyCommand copyCommand = new CopyCommand(c.getEditor());
-        c.executeCommand(copyCommand);
-        PasteCommand pCommand = new PasteCommand(c.getEditor()); 
-        c.executeCommand(pCommand);
+        controller.getModel().setSelectedShape(new Rectangle(10,10,10,10));
+        CopyCommand copyCommand = new CopyCommand(controller.getEditor());
+        controller.executeCommand(copyCommand);
+        PasteCommand pCommand = new PasteCommand(controller.getEditor()); 
+        controller.executeCommand(pCommand);
         undoCommand.execute();
         /* check if after the undo operation the shape is no more selected */
-        assertEquals(c.getModel().getSelectedShape(), null);
+        assertEquals(controller.getModel().getSelectedShape(), null);
         /* check if the state of the model is the state of the last executed command */
-        assertEquals(c.getModel().getAllShapes(), pCommand.getBackup());    
+        assertEquals(controller.getModel().getAllShapes(), pCommand.getBackup());    
 
         /*
 
          * 2) 
          */
 
-        CutCommand cutCommand = new CutCommand(c.getEditor());
-        c.executeCommand(cutCommand);
+        CutCommand cutCommand = new CutCommand(controller.getEditor());
+        controller.executeCommand(cutCommand);
         undoCommand.execute();
         /* check if after the undo operation the shape is no more selected */
-        assertEquals(c.getModel().getSelectedShape(), null);
+        assertEquals(controller.getModel().getSelectedShape(), null);
         /* check if the state of the model is the state of the last executed command */
-        assertEquals(c.getModel().getAllShapes(), cutCommand.getBackup());  
+        assertEquals(controller.getModel().getAllShapes(), cutCommand.getBackup());  
 
         /*
 
          * 3)  
          */
 
-        DrawShapeCommand drawShapeCommand = new DrawShapeCommand(c.getModel(), new Ellipse(10,10,10,10));
-        c.executeCommand(drawShapeCommand);
+        DrawShapeCommand drawShapeCommand = new DrawShapeCommand(controller.getModel(), new Ellipse(10,10,10,10));
+        controller.executeCommand(drawShapeCommand);
         undoCommand.execute();
         /* check if after the undo operation the shape is no more selected */
-        assertEquals(c.getModel().getSelectedShape(), null);
+        assertEquals(controller.getModel().getSelectedShape(), null);
         /* check if the state of the model is the state of the last executed command */
-        assertEquals(c.getModel().getAllShapes(), drawShapeCommand.getBackup());  
+        assertEquals(controller.getModel().getAllShapes(), drawShapeCommand.getBackup());  
 
         /*
 
          * 4) 
          */
-        DeleteCommand deleteCommand = new DeleteCommand(c.getEditor());
-        c.executeCommand(deleteCommand);
+        DeleteCommand deleteCommand = new DeleteCommand(controller.getEditor());
+        controller.executeCommand(deleteCommand);
         undoCommand.execute();
         /* check if after the undo operation the shape is no more selected */
-        assertEquals(c.getModel().getSelectedShape(), null);
+        assertEquals(controller.getModel().getSelectedShape(), null);
         /* check if the state of the model is the state of the last executed command */
-        assertEquals(c.getModel().getAllShapes(), deleteCommand.getBackup());  
-
+        assertEquals(controller.getModel().getAllShapes(), deleteCommand.getBackup());  
     }
     
 }

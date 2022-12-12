@@ -4,6 +4,13 @@ import javafx.beans.value.ObservableValue;
 import javafx.scene.control.Label;
 import javafx.scene.control.Slider;
 
+
+/*
+ * Slider Zoom class main is to change zoom in and zoom out in the drawable window
+ * so user can have a overview of all shape is drawing;
+ * 
+ */
+
 public class SliderZoom{
 
     private Slider slider;
@@ -14,6 +21,10 @@ public class SliderZoom{
         this.slider.setSnapToTicks(true);
     }
 
+/*
+ * set label with slider value, so user can know current zoom value.
+ * 
+ */
     public void setLabelOfSlider(Label valueZoomSlider){
 
         this.slider.valueProperty().addListener(new ChangeListener<Number>() {

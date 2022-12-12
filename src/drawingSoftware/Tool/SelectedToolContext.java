@@ -1,14 +1,14 @@
 package drawingSoftware.Tool;
 
-
-import java.util.ArrayList;
 import javafx.beans.value.ObservableBooleanValue;
-import javafx.scene.Node;
-import javafx.scene.Parent;
 import javafx.scene.control.ColorPicker;
+import javafx.scene.control.ContextMenu;
+import javafx.scene.control.MenuItem;
 import javafx.scene.control.TextField;
 import javafx.scene.layout.Pane;
-
+import javafx.event.EventHandler;
+import javafx.scene.input.MouseButton;
+import javafx.scene.input.MouseEvent;
 
 /*
  * 
@@ -23,35 +23,56 @@ public class SelectedToolContext{
     private ColorPicker fillColorPicker;
     private TextField widthTextField;
     private TextField heightTextField;
+    private Pane drawingWindow;
+    private MouseEvent e1;
 
-    
-    public SelectedToolContext(Tool currentTool, Pane drawingWindow, ColorPicker borderColorPicker, ColorPicker fillColorPicker){
+
+    private EventHandler<MouseEvent> pressEvent = new EventHandler<MouseEvent>() {
+
+        @Override
+        public void handle(MouseEvent e) {
+            if(e.getButton() == MouseButton.PRIMARY){
+                e1 = e;
+            }
+            e.consume();
+        }
+    };
+
+    private EventHandler<MouseEvent> releasedEvent = new EventHandler<MouseEvent>() {
+
+        @Override
+        public void handle(MouseEvent e) {
+            if(e.getButton() == MouseButton.PRIMARY){
+                currentTool.setToolParameters(e1, e);
+                useSelectedTool();
+            }
+            e.consume();
+        }
+    };
+
+    public SelectedToolContext(Tool currentTool,Pane drawingWindow){
         /*
          * @param {State} initial state when I open the program
          * 
          */
         this.currentTool = currentTool;
-        this.borderColorPicker = borderColorPicker;
-        this.fillColorPicker = fillColorPicker;    
+        this.drawingWindow = drawingWindow;
+        this.drawingWindow.addEventHandler(MouseEvent.MOUSE_PRESSED, pressEvent); 
+        this.drawingWindow.addEventHandler(MouseEvent.MOUSE_RELEASED, releasedEvent);
     }
     
     public void changeTool(Tool currentTool){
-        this.currentTool = currentTool;
-        currentTool.useSelectedTool(borderColorPicker, fillColorPicker);
+        //this.drawingWindow.removeEventHandler(MouseEvent.MOUSE_DRAGGED, dragEvent);
+        drawingWindow.setOnMouseClicked(null);
+        drawingWindow.setOnMouseMoved(null);
+        this.currentTool = currentTool;  
     }
 
-    public static ArrayList<Node> getAllNodes(Parent root) {
-        ArrayList<Node> nodes = new ArrayList<Node>();
-        addAllDescendents(root, nodes);
-        return nodes;
-    }
-    
-    private static void addAllDescendents(Parent parent, ArrayList<Node> nodes) {
-        for (Node node : parent.getChildrenUnmodifiable()) {
-            nodes.add(node);
-            if (node instanceof Parent)
-                addAllDescendents((Parent)node, nodes);
-        }
+    public void useSelectedTool(){
+        //this.drawingWindow.setOnMouseMoved(null);
+        //this.drawingWindow.setOnMouseClicked(null);
+        currentTool.useSelectedTool();
+
     }
 
     public Tool getSelectedTool(){
@@ -62,9 +83,6 @@ public class SelectedToolContext{
     }
     
     public ObservableBooleanValue isLineTool(){
-        /*
-         * 
-         */
         return currentTool.isNotLineTool();  
     }
 }

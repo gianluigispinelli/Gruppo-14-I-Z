@@ -1,4 +1,4 @@
-package drawingSoftware.Test;
+package drawingSoftware.Testing;
 
 
 import org.junit.Before;

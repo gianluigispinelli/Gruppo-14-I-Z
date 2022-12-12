@@ -12,16 +12,39 @@ public class Model {
 
     /*
 
-     * In questo modello vanno tutte le figure che inserisco nella drawingWindow 
-     */
+    * The Model class is responsible for holding
+    * the data of the application. In this specific case,
+    * the data are made up by:
+    * - An observableList of shapes which gets updated
+    * by the controller after the user interacts with the view,
+    * following the philosophy of the MVC pattern.
+    * - An istance of ObjectProperty which tracks the currentShape,
+    * which corresponds to the current shape the user selects on the 
+    * drawing window of the GUI. 
+    * 
+    */
     
     private ObservableList<Node> shapes; 
     private final ObjectProperty<Node> currentShape = new SimpleObjectProperty<>(null);
+    // model static according to Singleton pattern
+    private static Model model;
 
-    public Model(){
+    private Model(){
         this.shapes = FXCollections.observableArrayList();
     }
 
+    /*
+
+     * Singleton pattern. It must be only one istance at running time.  
+     */
+    public static Model getInstance(){
+        if (model == null){
+            model = new Model(); 
+        }
+        return model; 
+    }
+
+    // method for setting the current selected shape 
     public void setSelectedShape(Node node){
         this.currentShape.setValue(node);
     }
@@ -44,10 +67,6 @@ public class Model {
         return this.shapes;
     }
 
-    /*
-
-     * When a new shape has been added, the context is being saved before executing the operation
-     */
     public void addShape(Node shape){
         shapes.add(shape);
     }
@@ -60,9 +79,8 @@ public class Model {
         shapes.removeAll(shapes);
     }
 
-    /*
-     * usata in undo
-     */
+
+    /* used in undo for restoring a previous state of the model */
     public void addAll(List<Node> list){
         removeAll();   
         shapes.addAll(list);

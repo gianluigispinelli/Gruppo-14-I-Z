@@ -1,5 +1,7 @@
 package drawingSoftware.Command.LoadAndSaveCommand;
 
+import java.io.IOException;
+
 import drawingSoftware.Command.Command;
 import javafx.scene.layout.Pane;
 
@@ -14,7 +16,7 @@ public class SaveCommand implements Command {
     }
 
     @Override
-    public boolean execute() {
+    public boolean execute() throws IOException {
         this.receiver.save(this.screen);    
         return false; 
     }

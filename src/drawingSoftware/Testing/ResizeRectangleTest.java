@@ -1,4 +1,4 @@
-package drawingSoftware.Test;
+package drawingSoftware.Testing;
 
 public class ResizeRectangleTest {
     

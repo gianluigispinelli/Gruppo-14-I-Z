@@ -4,40 +4,40 @@ package drawingSoftware.Tool;
 import drawingSoftware.Controller;
 import drawingSoftware.Model;
 import drawingSoftware.Command.BackupCommand.ShapeCommand.MoveCommand;
+import drawingSoftware.Managers.MoveManager;
 import drawingSoftware.Shapes.MyBoundingBox;
 import javafx.beans.property.SimpleBooleanProperty;
 import javafx.beans.value.ObservableBooleanValue;
-import javafx.collections.ObservableList;
+import javafx.event.EventTarget;
+import javafx.scene.Cursor;
 import javafx.scene.Node;
 import javafx.scene.control.ColorPicker;
-import javafx.scene.control.TextField;
 import javafx.scene.input.MouseButton;
+import javafx.scene.paint.Color;
+import javafx.scene.shape.Shape;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.Pane;
-import javafx.scene.paint.Color;
-import javafx.scene.paint.Paint;
-import javafx.scene.shape.Ellipse;
-import javafx.scene.shape.Line;
-import javafx.scene.shape.Rectangle;
-import javafx.scene.shape.Shape;
 
 public class SelectTool implements Tool{
-    private Controller controller; 
-    private Model model; 
     private Pane drawingWindow;
-    private double startX;
-    private double startY;
-    private double endX;
-    private double endY;
-    private Node shapeToSelect;
-    private MouseEvent released;
-    private MouseEvent pressed;
+    private Model model; 
+    private EventTarget eventTarget;
+    private MouseButton buttonEvent1;
+    private ColorPicker borderColorPicker;
+    private ColorPicker fillColorPicker;
+    private Controller controller;
+    private MoveCommand moveCommand;
+
  
-    public SelectTool(Controller controller, Model model, Pane drawingWindow) {
-        this.controller = controller;
-        this.model = model; 
+    // Constructor
+    public SelectTool(Controller controller, Model model, Pane drawingWindow, ColorPicker borderColorPicker, ColorPicker  fillColorPicker) {
+        this.controller = controller; 
         this.drawingWindow = drawingWindow;
-        //this.captureMouseEvent();
+        this.borderColorPicker=borderColorPicker;
+        this.fillColorPicker=fillColorPicker;
+        this.model = model;
+        drawingWindow.setCursor(Cursor.HAND);
+        this.moveCommand = new MoveCommand(drawingWindow, model, new MoveManager());
     }
     
 
@@ -47,59 +47,67 @@ public class SelectTool implements Tool{
     }
 
     @Override
-    public void useSelectedTool(ColorPicker borderColor, ColorPicker fillColor) {
-
-        drawingWindow.setOnMousePressed(e ->{
-
-            if(e.getButton() == MouseButton.PRIMARY){
-                if (e.getTarget() instanceof Pane){     /* se tocco la drawingWindow */
+    public void useSelectedTool() {
+            if(buttonEvent1 == MouseButton.PRIMARY){
+                // if I click on the drawing window then if a shape is selected, I deselect it.
+                if (eventTarget instanceof Pane){     /* se tocco la drawingWindow */
+                    Shape shape = (Shape)model.getSelectedShape();
+                    if (shape != null){
+                        // When i deselect, the fillColor property and the stroke property have to be unbinded.
+                        shape.fillProperty().unbind();
+                        shape.strokeProperty().unbind();
+                        model.setCurrentShape(null);
+                    }
+                }
+                if (!(eventTarget instanceof MyBoundingBox) && !(eventTarget instanceof Pane)){
+                    // When i click on a shape, then the previous selected shape have to be deselected.
+                    Shape oldSelected = (Shape)model.getSelectedShape();
+                    if (oldSelected != null){
+                        oldSelected.strokeProperty().unbind();
+                        oldSelected.fillProperty().unbind();
+                    }
+                    
+                    // Set the new selected shape
+                    model.setCurrentShape((Node)eventTarget); 
+                    /* set the figure as selected in the Model */
+                    Shape newSelected = (Shape)model.getSelectedShape();
+                     // set the value of the color picker to the color of the selected shape.
+                    borderColorPicker.setValue((Color)(newSelected.getStroke()));
+                    fillColorPicker.setValue((Color)(newSelected.getFill()));
+                    makeSelected(newSelected);
+                    // Call to the move command in order to make possible the movement of the selected shape.
+                    controller.executeCommand(moveCommand);                    
+                }  
+                if (eventTarget instanceof MyBoundingBox){
+                    // If i click on a selected shape then i deselect it.
+                    Shape shape =  (Shape)model.getSelectedShape();
+                    shape.fillProperty().unbind();
+                    shape.strokeProperty().unbind();
                     model.setCurrentShape(null);
-                }
-                else{       /* non devo selezionare oggetti di tipo MyBoundingBox */
-                    if (!(e.getTarget() instanceof MyBoundingBox))  /* se non sto toccando una bounding box */
-                        model.setCurrentShape((Node)e.getTarget());  /* setto la figura come corrente nel Model */
-                }
+                }   
             }
-        });
-    
-        drawingWindow.setOnMouseReleased(e ->{
-        
-            // if (!(e.getTarget() instanceof Pane)){
-            //     if(e.getButton() == MouseButton.PRIMARY){
-            //         this.released = e;
-            //         this.setEndX(e.getX());
-            //         this.setEndY(e.getY());
-            //         MoveCommand moveCommand =  new MoveCommand(model, (Shape)model.getSelectedShape(), startX, startY, endX, endY);
-            //         MoveCommand moveCommand2 =  new MoveCommand(model, controller.getBoundingBox(), startX, startY, endX, endY);
-            //         controller.executeCommand(moveCommand);
-            //         controller.executeCommand(moveCommand2);
-            //     }
-            // }
-        });
     }
 
+     //The method set the button clicked and the target of the mouse event
+     // by taking in input the event captured in the selectedToolContext.
+    @Override
+    public void setToolParameters(MouseEvent e1, MouseEvent e2) {
 
-    public void setStartX(double startX) {
-        this.startX = startX;
+        if(e1.getButton() == MouseButton.PRIMARY){
+            this.buttonEvent1 = e1.getButton();
+            this.eventTarget = e1.getTarget();
+        }
     }
 
+    /*
+     * The method take in input the shape that has been clicked, put it to the front and bind the border color and the fill color 
+     * to the value of the respective colorPicker.
+     */
+    private void makeSelected(Shape shape){
 
-    public void setStartY(double startY) {
-        this.startY = startY;
+        shape.toFront();
+        shape.fillProperty().bind(fillColorPicker.valueProperty());
+        shape.strokeProperty().bind(borderColorPicker.valueProperty());
+
     }
-
-
-    public void setEndX(double endX) {
-        this.endX = endX;
-    }
-
-
-    public void setEndY(double endY) {
-        this.endY = endY;
-    }
-
-    public void setShapeToSelect(Node shapeToSelect) {
-        this.shapeToSelect = shapeToSelect;
-    }
-    
 }
